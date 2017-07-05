@@ -31,7 +31,7 @@ namespace SaveOrganizer
         public FormMain()
         {
             InitializeComponent();
-            StartPosition = FormStartPosition.CenterScreen;
+            this.StartPosition = FormStartPosition.CenterScreen;
             CreateConfigurationFile();
             ReadGlobalConfigurations();
             ComboBoxSelectGame.SelectedIndex = 0;
