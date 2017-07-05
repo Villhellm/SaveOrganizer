@@ -12,3 +12,17 @@ C:\Users\wlato\Source\Repos\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.
 C:\Users\wlato\Source\Repos\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.pdb
 C:\Users\wlato\Source\Repos\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.csprojResolveAssemblyReference.cache
 C:\Users\wlato\Source\Repos\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.FormToastResponse.resources
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\bin\Debug\SaveOrganizer.exe.config
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\bin\Debug\SaveOrganizer.exe
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\bin\Debug\SaveOrganizer.pdb
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.csprojResolveAssemblyReference.cache
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.FormHelp.resources
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.FormMain.resources
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.FormRename.resources
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.FormSettings.resources
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.FormToast.resources
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.FormToastResponse.resources
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.Properties.Resources.resources
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.csproj.GenerateResource.Cache
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.exe
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.pdb

@@ -234,7 +234,7 @@
             this.renameToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.editCurrentProfileToolStripMenuItem.Name = "editCurrentProfileToolStripMenuItem";
-            this.editCurrentProfileToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.editCurrentProfileToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.editCurrentProfileToolStripMenuItem.Text = "Edit Current Profile";
             // 
             // renameToolStripMenuItem
@@ -257,7 +257,7 @@
             this.addNewToolStripMenuItem,
             this.importExistingToolStripMenuItem});
             this.addProfileToolStripMenuItem.Name = "addProfileToolStripMenuItem";
-            this.addProfileToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.addProfileToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.addProfileToolStripMenuItem.Text = "Add Profile";
             // 
             // addNewToolStripMenuItem
@@ -281,7 +281,7 @@
             this.exportToolStripMenuItem,
             this.openInFileExplorerToolStripMenuItem});
             this.selectedSaveToolStripMenuItem.Name = "selectedSaveToolStripMenuItem";
-            this.selectedSaveToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.selectedSaveToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.selectedSaveToolStripMenuItem.Text = "Selected Save";
             // 
             // deleteToolStripMenuItem1
@@ -308,14 +308,14 @@
             // setSavefileDirectoryToolStripMenuItem
             // 
             this.setSavefileDirectoryToolStripMenuItem.Name = "setSavefileDirectoryToolStripMenuItem";
-            this.setSavefileDirectoryToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.setSavefileDirectoryToolStripMenuItem.Text = "Set Savefile Directory";
+            this.setSavefileDirectoryToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.setSavefileDirectoryToolStripMenuItem.Text = "Set Savefile Source";
             this.setSavefileDirectoryToolStripMenuItem.Click += new System.EventHandler(this.setSavefileDirectoryToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
