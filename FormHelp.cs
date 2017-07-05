@@ -19,7 +19,7 @@ namespace SaveOrganizer
 
         private void LnkLblEmail_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("mailto:"+"Kind.Dragonfruit@gmail.com");
+            Process.Start("mailto:"+"VillhellmSouls@gmail.com");
         }
 
         private void FormHelp_Load(object sender, EventArgs e)

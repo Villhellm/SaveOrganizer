@@ -35,12 +35,12 @@
             // LnkLblEmail
             // 
             this.LnkLblEmail.AutoSize = true;
-            this.LnkLblEmail.Location = new System.Drawing.Point(115, 112);
+            this.LnkLblEmail.Location = new System.Drawing.Point(138, 111);
             this.LnkLblEmail.Name = "LnkLblEmail";
-            this.LnkLblEmail.Size = new System.Drawing.Size(141, 13);
+            this.LnkLblEmail.Size = new System.Drawing.Size(128, 13);
             this.LnkLblEmail.TabIndex = 0;
             this.LnkLblEmail.TabStop = true;
-            this.LnkLblEmail.Text = "Kind.Dragonfruit@gmail.com";
+            this.LnkLblEmail.Text = "VillhellmSouls@gmail.com";
             this.LnkLblEmail.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LnkLblEmail_LinkClicked);
             // 
             // label1
