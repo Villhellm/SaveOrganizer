@@ -14,6 +14,7 @@ namespace SaveOrganizer
 {
     public partial class FormMain : Form
     {
+        //Unnecessary additions to a funtional program
         public static string AppDataRoamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\SaveOrganizer";
         public static string ConfigurationFile = AppDataRoamingPath + @"\Config.xml";
         KeyHooker Hooker;
