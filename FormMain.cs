@@ -442,10 +442,13 @@ namespace SaveOrganizer
             if (DR == DialogResult.OK)
             {
                 string ProfileName = Path.GetFileName(SelectProfile.SelectedPath);
-                DirectoryCopy(SelectProfile.SelectedPath, AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ProfileName, false);
-                GetSubDirectories();
-                ComboBoxSelectSubDirectory.SelectedIndex = ComboBoxSelectSubDirectory.Items.IndexOf(ProfileName);
+                if(VerifyValidity(SelectProfile.SelectedPath, Path.GetFileName(SelectProfile.SelectedPath)))
+                {
+                    DirectoryCopy(SelectProfile.SelectedPath, AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ProfileName, false);
+                    GetSubDirectories();
+                    ComboBoxSelectSubDirectory.SelectedIndex = ComboBoxSelectSubDirectory.Items.IndexOf(ProfileName);
 
+                }
             }
         }
 
@@ -456,9 +459,14 @@ namespace SaveOrganizer
             DialogResult DR = NewProfileName.ShowDialog();
             if (DR == DialogResult.OK)
             {
-                Directory.CreateDirectory(CurrentDirectory() + "\\" + NewProfileName.NewName);
-                GetSubDirectories();
-                ComboBoxSelectSubDirectory.SelectedIndex = ComboBoxSelectSubDirectory.Items.IndexOf(NewProfileName.NewName);
+                string DirectoryPath = CurrentDirectory() + "\\" + NewProfileName.NewName;
+                if (VerifyValidity(DirectoryPath, NewProfileName.NewName))
+                {
+                    Directory.CreateDirectory(CurrentDirectory() + "\\" + NewProfileName.NewName);
+                    GetSubDirectories();
+                    ComboBoxSelectSubDirectory.SelectedIndex = ComboBoxSelectSubDirectory.Items.IndexOf(NewProfileName.NewName);
+
+                }
             }
             if (DR == DialogResult.Cancel)
             {
@@ -479,11 +487,43 @@ namespace SaveOrganizer
                 DialogResult DR = NewProfileName.ShowDialog();
                 if (DR == DialogResult.OK)
                 {
-                    Directory.Move(CurrentSubDirectory(), CurrentDirectory() + "\\" + NewProfileName.NewName);
-                    GetSubDirectories();
-                    ComboBoxSelectSubDirectory.SelectedIndex = ComboBoxSelectSubDirectory.Items.IndexOf(NewProfileName.NewName);
+                    string NewPath = CurrentDirectory() + "\\" + NewProfileName.NewName;
+                    if (VerifyValidity(NewPath, NewProfileName.NewName))
+                    {
+                        Directory.Move(CurrentSubDirectory(), NewPath);
+                        GetSubDirectories();
+                        ComboBoxSelectSubDirectory.SelectedIndex = ComboBoxSelectSubDirectory.Items.IndexOf(NewProfileName.NewName);
+                    }
                 }
             }
+        }
+
+        private bool VerifyValidity(string DirectoryPath, string FileName)
+        {
+            if(FileName == "")
+            {
+                ActionCenter.Toast("Please enter a valid name", StartPoint(), 2);
+                return false;
+            }
+            if (Directory.Exists(DirectoryPath))
+            {
+                ActionCenter.Toast("That name already exists, try again", StartPoint(), 2);
+                return false;
+            }
+            foreach(char Check in FileName)
+            {
+                foreach(char Illegal in Path.GetInvalidFileNameChars())
+                {
+                    if(Check == Illegal)
+                    {
+                        ActionCenter.Toast("Invalid character detected. Please remove '" + Check + "' and try again", StartPoint(), 2);
+
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private void ImportCurrentSave()

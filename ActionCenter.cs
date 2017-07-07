@@ -31,6 +31,7 @@ namespace SaveOrganizer
         {
             FormToastResponse ShowToast = new FormToastResponse(Toast);
             ShowToast.StartPosition = FormStartPosition.CenterParent;
+            ShowToast.Focus();
             ShowToast.ShowDialog();
             return ShowToast.DialogResult;
         }

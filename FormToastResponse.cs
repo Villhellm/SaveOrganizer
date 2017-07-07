@@ -26,6 +26,7 @@ namespace SaveOrganizer
         private void ToastForm_Load(object sender, EventArgs e)
         {
             FadeIn();
+            BtnOkay.Focus();
         }
 
         private void FadeIn()
@@ -100,6 +101,11 @@ namespace SaveOrganizer
         {
             this.DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void FormToastResponse_Shown(object sender, EventArgs e)
+        {
+            Activate();
         }
     }
 }

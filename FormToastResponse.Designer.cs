@@ -64,7 +64,7 @@
             this.BtnOkay.Location = new System.Drawing.Point(72, 130);
             this.BtnOkay.Name = "BtnOkay";
             this.BtnOkay.Size = new System.Drawing.Size(92, 35);
-            this.BtnOkay.TabIndex = 3;
+            this.BtnOkay.TabIndex = 0;
             this.BtnOkay.Text = "Yes";
             this.BtnOkay.UseVisualStyleBackColor = true;
             this.BtnOkay.Click += new System.EventHandler(this.BtnOkay_Click);
@@ -96,6 +96,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "FormToast";
             this.Load += new System.EventHandler(this.ToastForm_Load);
+            this.Shown += new System.EventHandler(this.FormToastResponse_Shown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.ToastForm_Paint);
             this.ResumeLayout(false);
 
