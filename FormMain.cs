@@ -19,12 +19,14 @@ namespace SaveOrganizer
         public static string ConfigurationFile = AppDataRoamingPath + @"\Config.xml";
         KeyHooker Hooker;
         List<Hotkeys> LoadedHotkeys = new List<Hotkeys>();
+        private static ListSortDirection _oldSortOrder;
+        private static DataGridViewColumn _oldSortCol;
         private string PreviousFileName = "";
         private bool PreviousReadOnly;
         private bool EnableGlobalHotkeys = false;
         Point StartPoint()
         {
-          Point Inter   = new Point(this.Location.X + Width / 2 - 186, Location.Y + Height - 170);
+            Point Inter = new Point(this.Location.X + Width / 2 - 186, Location.Y + Height - 170);
             return Inter;
         }
 
@@ -73,7 +75,7 @@ namespace SaveOrganizer
                         }
                     }
                 }
-          
+
             }
         }
 
@@ -262,12 +264,29 @@ namespace SaveOrganizer
             FileTable = FileView.ToTable();
             for (int i = 0; i < FileTable.Rows.Count; i++)
             {
-                    DGVSaveFiles.Rows.Add(FileTable.Rows[i][0], FileTable.Rows[i][1], FileTable.Rows[i][2]);
+                DGVSaveFiles.Rows.Add(FileTable.Rows[i][0], FileTable.Rows[i][1], FileTable.Rows[i][2]);
+            }
+        }
+
+        public static void SaveSorting(DataGridView grid)
+        {
+            _oldSortOrder = grid.SortOrder == SortOrder.Ascending ?
+                ListSortDirection.Ascending : ListSortDirection.Descending;
+            _oldSortCol = grid.SortedColumn;
+        }
+
+        public static void RestoreSorting(DataGridView grid)
+        {
+            if (_oldSortCol != null)
+            {
+                DataGridViewColumn newCol = grid.Columns[_oldSortCol.Name];
+                grid.Sort(newCol, _oldSortOrder);
             }
         }
 
         private void GetFileNames()
         {
+            SaveSorting(DGVSaveFiles);
             DGVSaveFiles.Rows.Clear();
             TxtFileSearch.Text = "Search...";
             DataTable FileTable = new DataTable();
@@ -286,13 +305,14 @@ namespace SaveOrganizer
             {
                 DGVSaveFiles.Rows.Add(FileTable.Rows[i][0], FileTable.Rows[i][1], FileTable.Rows[i][2]);
             }
+            RestoreSorting(DGVSaveFiles);
         }
 
         private void GetSubDirectories()
         {
             string[] SubDirs = Directory.GetDirectories(CurrentDirectory());
             ComboBoxSelectSubDirectory.Items.Clear();
-            foreach(string Dir in SubDirs)
+            foreach (string Dir in SubDirs)
             {
                 ComboBoxSelectSubDirectory.Items.Add(Path.GetFileName(Dir));
             }
@@ -417,7 +437,7 @@ namespace SaveOrganizer
         {
             FolderBrowserDialog SelectProfile = new FolderBrowserDialog();
             DialogResult DR = SelectProfile.ShowDialog();
-            if(DR == DialogResult.OK)
+            if (DR == DialogResult.OK)
             {
                 string ProfileName = Path.GetFileName(SelectProfile.SelectedPath);
                 DirectoryCopy(SelectProfile.SelectedPath, AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ProfileName, false);
@@ -438,7 +458,7 @@ namespace SaveOrganizer
                 GetSubDirectories();
                 ComboBoxSelectSubDirectory.SelectedIndex = ComboBoxSelectSubDirectory.Items.IndexOf(NewProfileName.NewName);
             }
-            if(DR == DialogResult.Cancel)
+            if (DR == DialogResult.Cancel)
             {
                 ComboBoxSelectSubDirectory.SelectedIndex = ComboBoxSelectSubDirectory.Items.IndexOf("Default");
             }
@@ -626,7 +646,7 @@ namespace SaveOrganizer
 
         private void ComboBoxSelectSubDirectory_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(ComboBoxSelectSubDirectory.Text == "Add new ...")
+            if (ComboBoxSelectSubDirectory.Text == "Add new ...")
             {
                 AddNewProfile();
             }
@@ -643,7 +663,7 @@ namespace SaveOrganizer
 
         private void TxtFileSearch_TextChanged(object sender, EventArgs e)
         {
-            if(TxtFileSearch.Text != "Search...")
+            if (TxtFileSearch.Text != "Search...")
             {
                 GetFileNames(true);
             }
@@ -743,7 +763,7 @@ namespace SaveOrganizer
 
         private void DGVSaveFiles_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if(DGVSaveFiles.CurrentCell != null)
+            if (DGVSaveFiles.CurrentCell != null)
             {
                 if (DGVSaveFiles.CurrentCell == DGVSaveFiles.CurrentRow.Cells[2])
                 {
@@ -766,39 +786,41 @@ namespace SaveOrganizer
 
         private void DGVSaveFiles_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
         {
-            if(e.Column.Index == 0)
+            if (e.Column.Index == 0)
             {
-
-                string NumbersCell1 = "";
-                int CurrentIndex = 0;
-                int NameLength = e.CellValue1.ToString().Length;
-                while (CurrentIndex < NameLength && char.IsDigit(e.CellValue1.ToString()[CurrentIndex]))
+                if (char.IsDigit(e.CellValue1.ToString()[0]))
                 {
-                    NumbersCell1 = NumbersCell1 + e.CellValue1.ToString()[CurrentIndex];
-                    CurrentIndex++;
+                    string NumbersCell1 = "";
+                    int CurrentIndex = 0;
+                    int NameLength = e.CellValue1.ToString().Length;
+                    while (CurrentIndex < NameLength && char.IsDigit(e.CellValue1.ToString()[CurrentIndex]))
+                    {
+                        NumbersCell1 = NumbersCell1 + e.CellValue1.ToString()[CurrentIndex];
+                        CurrentIndex++;
 
-                }
+                    }
 
-                string NumbersCell2 = "";
-                int CurrentIndex2 = 0;
-                int NameLength2 = e.CellValue2.ToString().Length;
-                while (CurrentIndex2 < NameLength2 && char.IsDigit(e.CellValue2.ToString()[CurrentIndex2]))
-                {
-                    NumbersCell2 = NumbersCell2 + e.CellValue2.ToString()[CurrentIndex2];
-                    CurrentIndex2++;
+                    string NumbersCell2 = "";
+                    int CurrentIndex2 = 0;
+                    int NameLength2 = e.CellValue2.ToString().Length;
+                    while (CurrentIndex2 < NameLength2 && char.IsDigit(e.CellValue2.ToString()[CurrentIndex2]))
+                    {
+                        NumbersCell2 = NumbersCell2 + e.CellValue2.ToString()[CurrentIndex2];
+                        CurrentIndex2++;
 
-                }
+                    }
 
-                if(NumbersCell1 == "" || NumbersCell2 == "")
-                {
-                    e.SortResult = NumbersCell2.CompareTo(NumbersCell1);
+                    if (NumbersCell1 == "" || NumbersCell2 == "")
+                    {
+                        e.SortResult = NumbersCell2.CompareTo(NumbersCell1);
+                    }
+                    else
+                    {
+                        e.SortResult = int.Parse(NumbersCell1).CompareTo(int.Parse(NumbersCell2));
+                    }
+
+                    e.Handled = true;
                 }
-                else
-                {
-                    e.SortResult = int.Parse(NumbersCell1).CompareTo(int.Parse(NumbersCell2));
-                }
-                
-                e.Handled = true;
             }
         }
 
@@ -844,7 +866,7 @@ namespace SaveOrganizer
 
         private void TxtFileSearch_Enter(object sender, EventArgs e)
         {
-            if(TxtFileSearch.Text == "Search...")
+            if (TxtFileSearch.Text == "Search...")
             {
                 TxtFileSearch.Text = "";
             }
