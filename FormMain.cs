@@ -282,7 +282,7 @@ namespace SaveOrganizer
             }
             else
             {
-                DGV.Sort(DGV.Columns[0], ListSortDirection.Descending);
+                DGV.Sort(DGV.Columns[0], ListSortDirection.Ascending);
             }
         }
 
@@ -802,19 +802,19 @@ namespace SaveOrganizer
 
                     if (NumbersCell1 == "" || NumbersCell2 == "")
                     {
-                        e.SortResult = System.String.Compare(DGVSaveFiles.Rows[e.RowIndex1].Cells[0].Value.ToString(), DGVSaveFiles.Rows[e.RowIndex2].Cells[0].Value.ToString());
+                        e.SortResult = System.String.Compare(e.CellValue1.ToString(), e.CellValue2.ToString());
                     }
                     else
                     {
-                        e.SortResult = int.Parse(NumbersCell2).CompareTo(int.Parse(NumbersCell1));
+                        e.SortResult = int.Parse(NumbersCell1).CompareTo(int.Parse(NumbersCell2));
                     }
 
                     e.Handled = true;
                 }
             }
-            else if(e.Column.Index != 0)
+            else if(e.Column.Index == 2)
             {
-                e.SortResult = System.String.Compare(e.CellValue1.ToString(), e.CellValue2.ToString());
+                e.SortResult = System.String.Compare(e.CellValue2.ToString(), e.CellValue1.ToString());
                 if (e.SortResult == 0)
                 {
                     string NumbersCell1 = GetLeadingDigits(DGVSaveFiles.Rows[e.RowIndex1].Cells[0].Value.ToString());
@@ -824,11 +824,11 @@ namespace SaveOrganizer
 
                     if (NumbersCell1 == "" || NumbersCell2 == "")
                     {
-                        e.SortResult = System.String.Compare(DGVSaveFiles.Rows[e.RowIndex1].Cells[0].Value.ToString(), DGVSaveFiles.Rows[e.RowIndex2].Cells[0].Value.ToString());
+                        e.SortResult = System.String.Compare(e.CellValue1.ToString(), e.CellValue2.ToString());
                     }
                     else
                     {
-                        e.SortResult = int.Parse(NumbersCell2).CompareTo(int.Parse(NumbersCell1));
+                        e.SortResult = int.Parse(NumbersCell1).CompareTo(int.Parse(NumbersCell2));
                     }
 
                     e.Handled = true;
@@ -842,11 +842,11 @@ namespace SaveOrganizer
 
                 if (NumbersCell1 == "" || NumbersCell2 == "")
                 {
-                    e.SortResult = System.String.Compare(e.CellValue2.ToString(), e.CellValue1.ToString());
+                    e.SortResult = System.String.Compare(e.CellValue1.ToString(), e.CellValue2.ToString());
                 }
                 else
                 {
-                    e.SortResult = int.Parse(NumbersCell2).CompareTo(int.Parse(NumbersCell1));
+                    e.SortResult = int.Parse(NumbersCell1).CompareTo(int.Parse(NumbersCell2));
                 }
 
                 e.Handled = true;
