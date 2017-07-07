@@ -19,8 +19,8 @@ namespace SaveOrganizer
         public static string ConfigurationFile = AppDataRoamingPath + @"\Config.xml";
         KeyHooker Hooker;
         List<Hotkeys> LoadedHotkeys = new List<Hotkeys>();
-        private static ListSortDirection _oldSortOrder;
-        private static DataGridViewColumn _oldSortCol;
+        private static ListSortDirection SaveSortOrder;
+        private static DataGridViewColumn SaveSortColumn;
         private string PreviousFileName = "";
         private bool PreviousReadOnly;
         private bool EnableGlobalHotkeys = false;
@@ -41,8 +41,6 @@ namespace SaveOrganizer
             Hooker = new KeyHooker();
             Hooker.Initialize();
             Hooker.PropertyChanged += new PropertyChangedEventHandler(KeyPressed);
-
-
         }
 
         public static bool IsAdministrator()
@@ -268,19 +266,23 @@ namespace SaveOrganizer
             }
         }
 
-        public static void SaveSorting(DataGridView grid)
+        public static void SaveSorting(DataGridView DGV)
         {
-            _oldSortOrder = grid.SortOrder == SortOrder.Ascending ?
+            SaveSortOrder = DGV.SortOrder == SortOrder.Ascending ?
                 ListSortDirection.Ascending : ListSortDirection.Descending;
-            _oldSortCol = grid.SortedColumn;
+            SaveSortColumn = DGV.SortedColumn;
         }
 
-        public static void RestoreSorting(DataGridView grid)
+        public static void RestoreSorting(DataGridView DGV)
         {
-            if (_oldSortCol != null)
+            if (SaveSortColumn != null)
             {
-                DataGridViewColumn newCol = grid.Columns[_oldSortCol.Name];
-                grid.Sort(newCol, _oldSortOrder);
+                DataGridViewColumn newCol = DGV.Columns[SaveSortColumn.Name];
+                DGV.Sort(newCol, SaveSortOrder);
+            }
+            else
+            {
+                DGV.Sort(DGV.Columns[0], ListSortDirection.Descending);
             }
         }
 
@@ -291,7 +293,7 @@ namespace SaveOrganizer
             TxtFileSearch.Text = "Search...";
             DataTable FileTable = new DataTable();
             FileTable.Columns.Add("SaveName", typeof(string));
-            FileTable.Columns.Add("DateCreated", typeof(string));
+            FileTable.Columns.Add("DateCreated", typeof(DateTime));
             FileTable.Columns.Add("ReadOnly", typeof(bool));
 
             string[] Files = Directory.GetFiles(CurrentSubDirectory());
@@ -786,42 +788,82 @@ namespace SaveOrganizer
 
         private void DGVSaveFiles_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
         {
-            if (e.Column.Index == 0)
+            if(e.Column.Index == 1)
             {
-                if (char.IsDigit(e.CellValue1.ToString()[0]))
+                DateTime Cell1Date = Convert.ToDateTime(e.CellValue1.ToString());
+                DateTime Cell2Date = Convert.ToDateTime(e.CellValue2.ToString());
+                e.SortResult = DateTime.Compare(Cell2Date, Cell1Date);
+                if (e.SortResult == 0)
                 {
-                    string NumbersCell1 = "";
-                    int CurrentIndex = 0;
-                    int NameLength = e.CellValue1.ToString().Length;
-                    while (CurrentIndex < NameLength && char.IsDigit(e.CellValue1.ToString()[CurrentIndex]))
-                    {
-                        NumbersCell1 = NumbersCell1 + e.CellValue1.ToString()[CurrentIndex];
-                        CurrentIndex++;
+                    string NumbersCell1 = GetLeadingDigits(DGVSaveFiles.Rows[e.RowIndex1].Cells[0].Value.ToString());
 
-                    }
 
-                    string NumbersCell2 = "";
-                    int CurrentIndex2 = 0;
-                    int NameLength2 = e.CellValue2.ToString().Length;
-                    while (CurrentIndex2 < NameLength2 && char.IsDigit(e.CellValue2.ToString()[CurrentIndex2]))
-                    {
-                        NumbersCell2 = NumbersCell2 + e.CellValue2.ToString()[CurrentIndex2];
-                        CurrentIndex2++;
-
-                    }
+                    string NumbersCell2 = GetLeadingDigits(DGVSaveFiles.Rows[e.RowIndex2].Cells[0].Value.ToString());
 
                     if (NumbersCell1 == "" || NumbersCell2 == "")
                     {
-                        e.SortResult = NumbersCell2.CompareTo(NumbersCell1);
+                        e.SortResult = System.String.Compare(DGVSaveFiles.Rows[e.RowIndex1].Cells[0].Value.ToString(), DGVSaveFiles.Rows[e.RowIndex2].Cells[0].Value.ToString());
                     }
                     else
                     {
-                        e.SortResult = int.Parse(NumbersCell1).CompareTo(int.Parse(NumbersCell2));
+                        e.SortResult = int.Parse(NumbersCell2).CompareTo(int.Parse(NumbersCell1));
                     }
 
                     e.Handled = true;
                 }
             }
+            else if(e.Column.Index != 0)
+            {
+                e.SortResult = System.String.Compare(e.CellValue1.ToString(), e.CellValue2.ToString());
+                if (e.SortResult == 0)
+                {
+                    string NumbersCell1 = GetLeadingDigits(DGVSaveFiles.Rows[e.RowIndex1].Cells[0].Value.ToString());
+
+
+                    string NumbersCell2 = GetLeadingDigits(DGVSaveFiles.Rows[e.RowIndex2].Cells[0].Value.ToString());
+
+                    if (NumbersCell1 == "" || NumbersCell2 == "")
+                    {
+                        e.SortResult = System.String.Compare(DGVSaveFiles.Rows[e.RowIndex1].Cells[0].Value.ToString(), DGVSaveFiles.Rows[e.RowIndex2].Cells[0].Value.ToString());
+                    }
+                    else
+                    {
+                        e.SortResult = int.Parse(NumbersCell2).CompareTo(int.Parse(NumbersCell1));
+                    }
+
+                    e.Handled = true;
+                }
+            }
+            else
+            {
+                string NumbersCell1 = GetLeadingDigits(e.CellValue1.ToString());
+
+                string NumbersCell2 = GetLeadingDigits(e.CellValue2.ToString());
+
+                if (NumbersCell1 == "" || NumbersCell2 == "")
+                {
+                    e.SortResult = System.String.Compare(e.CellValue2.ToString(), e.CellValue1.ToString());
+                }
+                else
+                {
+                    e.SortResult = int.Parse(NumbersCell2).CompareTo(int.Parse(NumbersCell1));
+                }
+
+                e.Handled = true;
+            }
+        }
+
+        private string GetLeadingDigits(string CellStringValue)
+        {
+            string CellNumberValue = "";
+            int CurrentIndex = 0;
+            int NameLength2 = CellStringValue.Length;
+            while (CurrentIndex < NameLength2 && char.IsDigit(CellStringValue[CurrentIndex]))
+            {
+                CellNumberValue = CellNumberValue + CellStringValue[CurrentIndex];
+                CurrentIndex++;
+            }
+            return CellNumberValue;
         }
 
         private void renameToolStripMenuItem_Click(object sender, EventArgs e)
