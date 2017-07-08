@@ -442,7 +442,7 @@ namespace SaveOrganizer
             if (DR == DialogResult.OK)
             {
                 string ProfileName = Path.GetFileName(SelectProfile.SelectedPath);
-                if(VerifyValidity(SelectProfile.SelectedPath, Path.GetFileName(SelectProfile.SelectedPath)))
+                if(VerifyValidity(AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ProfileName, ProfileName))
                 {
                     DirectoryCopy(SelectProfile.SelectedPath, AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ProfileName, false);
                     GetSubDirectories();
