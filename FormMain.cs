@@ -78,12 +78,26 @@ namespace SaveOrganizer
                                 SetReadOnly(GetGameSaveLocation(ComboBoxSelectGame.Text), !SelectedSave.IsReadOnly);
                                 break;
                             case "Quicksave":
-                                dsHooker.ExitToMainMenu();
-                                CreateQuickSave();
+                                if(ComboBoxSelectGame.Text == "Dark Souls")
+                                {
+                                    dsHooker.ExitToMainMenu();
+                                    CreateQuickSave();
+                                }
+                                else
+                                {
+                                    ActionCenter.Toast("That only works for Dark Souls 1, oops :/", StartPoint(), 1);
+                                }
                                 break;
                             case "Quickload":
-                                dsHooker.ExitToMainMenu();
-                                LoadQuicksave();
+                                if (ComboBoxSelectGame.Text == "Dark Souls")
+                                {
+                                    dsHooker.ExitToMainMenu();
+                                    LoadQuicksave();
+                                }
+                                else
+                                {
+                                    ActionCenter.Toast("That only works for Dark Souls 1, oops :/", StartPoint(), 1);
+                                }
                                 break;
                         }
                     }
