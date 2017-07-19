@@ -38,6 +38,10 @@
             this.TxtToggleReadOnlyHotkey = new System.Windows.Forms.Label();
             this.TxtExportSaveHotkey = new System.Windows.Forms.Label();
             this.TxtImportSaveHotkey = new System.Windows.Forms.Label();
+            this.TxtQuickSaveHotkey = new System.Windows.Forms.Label();
+            this.CBQuicksave = new System.Windows.Forms.CheckBox();
+            this.TxtQuickLoadHotkey = new System.Windows.Forms.Label();
+            this.CBQuickload = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // CBToggleGlobalHotkeys
@@ -96,7 +100,7 @@
             // 
             // BtnSave
             // 
-            this.BtnSave.Location = new System.Drawing.Point(52, 215);
+            this.BtnSave.Location = new System.Drawing.Point(52, 267);
             this.BtnSave.Name = "BtnSave";
             this.BtnSave.Size = new System.Drawing.Size(75, 23);
             this.BtnSave.TabIndex = 8;
@@ -106,7 +110,7 @@
             // 
             // BtnCancel
             // 
-            this.BtnCancel.Location = new System.Drawing.Point(194, 215);
+            this.BtnCancel.Location = new System.Drawing.Point(194, 267);
             this.BtnCancel.Name = "BtnCancel";
             this.BtnCancel.Size = new System.Drawing.Size(75, 23);
             this.BtnCancel.TabIndex = 9;
@@ -150,11 +154,61 @@
             this.TxtImportSaveHotkey.Enter += new System.EventHandler(this.SaveHotkey_Enter);
             this.TxtImportSaveHotkey.Leave += new System.EventHandler(this.SaveHotkey_Leave);
             // 
+            // TxtQuickSaveHotkey
+            // 
+            this.TxtQuickSaveHotkey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TxtQuickSaveHotkey.Enabled = false;
+            this.TxtQuickSaveHotkey.Location = new System.Drawing.Point(205, 199);
+            this.TxtQuickSaveHotkey.Name = "TxtQuickSaveHotkey";
+            this.TxtQuickSaveHotkey.Size = new System.Drawing.Size(184, 24);
+            this.TxtQuickSaveHotkey.TabIndex = 15;
+            this.TxtQuickSaveHotkey.Click += new System.EventHandler(this.SaveHotkey_Click);
+            this.TxtQuickSaveHotkey.Enter += new System.EventHandler(this.SaveHotkey_Enter);
+            this.TxtQuickSaveHotkey.Leave += new System.EventHandler(this.SaveHotkey_Leave);
+            // 
+            // CBQuicksave
+            // 
+            this.CBQuicksave.AutoSize = true;
+            this.CBQuicksave.Enabled = false;
+            this.CBQuicksave.Location = new System.Drawing.Point(68, 199);
+            this.CBQuicksave.Name = "CBQuicksave";
+            this.CBQuicksave.Size = new System.Drawing.Size(82, 17);
+            this.CBQuicksave.TabIndex = 14;
+            this.CBQuicksave.Text = "Quick-Save";
+            this.CBQuicksave.UseVisualStyleBackColor = true;
+            // 
+            // TxtQuickLoadHotkey
+            // 
+            this.TxtQuickLoadHotkey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TxtQuickLoadHotkey.Enabled = false;
+            this.TxtQuickLoadHotkey.Location = new System.Drawing.Point(205, 233);
+            this.TxtQuickLoadHotkey.Name = "TxtQuickLoadHotkey";
+            this.TxtQuickLoadHotkey.Size = new System.Drawing.Size(184, 24);
+            this.TxtQuickLoadHotkey.TabIndex = 17;
+            this.TxtQuickLoadHotkey.Click += new System.EventHandler(this.SaveHotkey_Click);
+            this.TxtQuickLoadHotkey.Enter += new System.EventHandler(this.SaveHotkey_Enter);
+            this.TxtQuickLoadHotkey.Leave += new System.EventHandler(this.SaveHotkey_Leave);
+            // 
+            // CBQuickload
+            // 
+            this.CBQuickload.AutoSize = true;
+            this.CBQuickload.Enabled = false;
+            this.CBQuickload.Location = new System.Drawing.Point(68, 233);
+            this.CBQuickload.Name = "CBQuickload";
+            this.CBQuickload.Size = new System.Drawing.Size(81, 17);
+            this.CBQuickload.TabIndex = 16;
+            this.CBQuickload.Text = "Quick-Load";
+            this.CBQuickload.UseVisualStyleBackColor = true;
+            // 
             // FormSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(401, 261);
+            this.ClientSize = new System.Drawing.Size(401, 316);
+            this.Controls.Add(this.TxtQuickLoadHotkey);
+            this.Controls.Add(this.CBQuickload);
+            this.Controls.Add(this.TxtQuickSaveHotkey);
+            this.Controls.Add(this.CBQuicksave);
             this.Controls.Add(this.TxtImportSaveHotkey);
             this.Controls.Add(this.TxtExportSaveHotkey);
             this.Controls.Add(this.TxtToggleReadOnlyHotkey);
@@ -186,5 +240,9 @@
         private System.Windows.Forms.Label TxtToggleReadOnlyHotkey;
         private System.Windows.Forms.Label TxtExportSaveHotkey;
         private System.Windows.Forms.Label TxtImportSaveHotkey;
+        private System.Windows.Forms.Label TxtQuickSaveHotkey;
+        private System.Windows.Forms.CheckBox CBQuicksave;
+        private System.Windows.Forms.Label TxtQuickLoadHotkey;
+        private System.Windows.Forms.CheckBox CBQuickload;
     }
 }

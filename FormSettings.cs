@@ -99,13 +99,37 @@ namespace SaveOrganizer
                         TxtToggleReadOnlyHotkey.Text = Node["KeyCode"].InnerText;
                     }
                 }
+                if (Node["Name"].InnerText == "Quicksave")
+                {
+                    CBQuicksave.Checked = Convert.ToBoolean(Node["Enabled"].InnerText);
+                    if (Node["Modifier"].InnerText != "None")
+                    {
+                        TxtQuickSaveHotkey.Text = Node["Modifier"].InnerText + " + " + Node["KeyCode"].InnerText;
+                    }
+                    else
+                    {
+                        TxtQuickSaveHotkey.Text = Node["KeyCode"].InnerText;
+                    }
+                }
+                if (Node["Name"].InnerText == "Quickload")
+                {
+                    CBQuickload.Checked = Convert.ToBoolean(Node["Enabled"].InnerText);
+                    if (Node["Modifier"].InnerText != "None")
+                    {
+                        TxtQuickLoadHotkey.Text = Node["Modifier"].InnerText + " + " + Node["KeyCode"].InnerText;
+                    }
+                    else
+                    {
+                        TxtQuickLoadHotkey.Text = Node["KeyCode"].InnerText;
+                    }
+                }
             }
         }
 
         private void CBToggleGlobalHotkeys_CheckedChanged(object sender, EventArgs e)
         {
-            List<CheckBox> HotKeyEnablers = new List<CheckBox>() { CBExportSelectedSave, CBImportCurrentSave, CBToggleReadOnly };
-            List<Label> HotKeyEnablersBox = new List<Label>() { TxtExportSaveHotkey, TxtImportSaveHotkey, TxtToggleReadOnlyHotkey };
+            List<CheckBox> HotKeyEnablers = new List<CheckBox>() { CBExportSelectedSave, CBImportCurrentSave, CBToggleReadOnly, CBQuicksave, CBQuickload };
+            List<Label> HotKeyEnablersBox = new List<Label>() { TxtExportSaveHotkey, TxtImportSaveHotkey, TxtToggleReadOnlyHotkey, TxtQuickSaveHotkey, TxtQuickLoadHotkey };
 
             foreach (CheckBox Enabler in HotKeyEnablers)
             {
@@ -152,6 +176,14 @@ namespace SaveOrganizer
                 if (Node["Name"].InnerText == "ToggleReadOnly")
                 {
                     SaveHotkey(Node, CBToggleReadOnly, TxtToggleReadOnlyHotkey);
+                }
+                if (Node["Name"].InnerText == "Quicksave")
+                {
+                    SaveHotkey(Node, CBQuicksave, TxtQuickSaveHotkey);
+                }
+                if (Node["Name"].InnerText == "Quickload")
+                {
+                    SaveHotkey(Node, CBQuickload, TxtQuickLoadHotkey);
                 }
             }
 

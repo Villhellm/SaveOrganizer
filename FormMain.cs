@@ -9,6 +9,9 @@ using System.Data;
 using System.ComponentModel;
 using System.Security.Principal;
 using System.Drawing;
+using System.Xml.Linq;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace SaveOrganizer
 {
@@ -18,12 +21,14 @@ namespace SaveOrganizer
         public static string AppDataRoamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\SaveOrganizer";
         public static string ConfigurationFile = AppDataRoamingPath + @"\Config.xml";
         KeyHooker Hooker;
+        GameHooker dsHooker;
         List<Hotkeys> LoadedHotkeys = new List<Hotkeys>();
         private static ListSortDirection SaveSortOrder;
         private static DataGridViewColumn SaveSortColumn;
         private string PreviousFileName = "";
         private bool PreviousReadOnly;
         private bool EnableGlobalHotkeys = false;
+
         Point StartPoint()
         {
             Point Inter = new Point(this.Location.X + Width / 2 - 186, Location.Y + Height - 170);
@@ -35,12 +40,14 @@ namespace SaveOrganizer
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
             CreateConfigurationFile();
+            VerifyXMLConfigFile();
             ReadGlobalConfigurations();
             ComboBoxSelectGame.SelectedIndex = 0;
             ComboBoxSelectSubDirectory.SelectedValue = "Default";
             Hooker = new KeyHooker();
             Hooker.Initialize();
             Hooker.PropertyChanged += new PropertyChangedEventHandler(KeyPressed);
+            dsHooker = new GameHooker();
         }
 
         public static bool IsAdministrator()
@@ -69,6 +76,14 @@ namespace SaveOrganizer
                             case "ToggleReadOnly":
                                 FileInfo SelectedSave = new FileInfo(GetGameSaveLocation(ComboBoxSelectGame.Text));
                                 SetReadOnly(GetGameSaveLocation(ComboBoxSelectGame.Text), !SelectedSave.IsReadOnly);
+                                break;
+                            case "Quicksave":
+                                dsHooker.ExitToMainMenu();
+                                CreateQuickSave();
+                                break;
+                            case "Quickload":
+                                dsHooker.ExitToMainMenu();
+                                LoadQuicksave();
                                 break;
                         }
                     }
@@ -167,6 +182,7 @@ namespace SaveOrganizer
                 Writer.WriteString("False");
                 Writer.WriteEndElement();
                 Writer.WriteEndElement();
+
                 Writer.WriteStartElement("Hotkey");
                 Writer.WriteStartElement("Name");
                 Writer.WriteString("ExportSave");
@@ -181,6 +197,7 @@ namespace SaveOrganizer
                 Writer.WriteString("False");
                 Writer.WriteEndElement();
                 Writer.WriteEndElement();
+
                 Writer.WriteStartElement("Hotkey");
                 Writer.WriteStartElement("Name");
                 Writer.WriteString("ToggleReadOnly");
@@ -195,11 +212,92 @@ namespace SaveOrganizer
                 Writer.WriteString("False");
                 Writer.WriteEndElement();
                 Writer.WriteEndElement();
+
+                Writer.WriteStartElement("Hotkey");
+                Writer.WriteStartElement("Name");
+                Writer.WriteString("Quicksave");
+                Writer.WriteEndElement();
+                Writer.WriteStartElement("Modifier");
+                Writer.WriteString("None");
+                Writer.WriteEndElement();
+                Writer.WriteStartElement("KeyCode");
+                Writer.WriteString("None");
+                Writer.WriteEndElement();
+                Writer.WriteStartElement("Enabled");
+                Writer.WriteString("False");
+                Writer.WriteEndElement();
+                Writer.WriteEndElement();
+
+                Writer.WriteStartElement("Hotkey");
+                Writer.WriteStartElement("Name");
+                Writer.WriteString("Quickload");
+                Writer.WriteEndElement();
+                Writer.WriteStartElement("Modifier");
+                Writer.WriteString("None");
+                Writer.WriteEndElement();
+                Writer.WriteStartElement("KeyCode");
+                Writer.WriteString("None");
+                Writer.WriteEndElement();
+                Writer.WriteStartElement("Enabled");
+                Writer.WriteString("False");
+                Writer.WriteEndElement();
+                Writer.WriteEndElement();
+
                 Writer.WriteEndElement();
 
                 Writer.WriteEndElement();
                 Writer.Close();
             }
+        }
+
+        private void VerifyXMLConfigFile()
+        {
+            XDocument Xml = XDocument.Load(ConfigurationFile);
+
+            VerifyConfigSetting(Xml, "AlwaysOnTop");
+            VerifyConfigSetting(Xml, "EnableHotkeys");
+            VerifyGame(Xml, "Dark Souls");
+            VerifyGame(Xml, "Dark Souls II");
+            VerifyGame(Xml, "Dark Souls II SotFS");
+            VerifyGame(Xml, "Dark Souls III");
+            VerifyHotkeyNode(Xml, "ImportSave");
+            VerifyHotkeyNode(Xml, "ExportSave");
+            VerifyHotkeyNode(Xml, "ToggleReadOnly");
+            VerifyHotkeyNode(Xml, "Quicksave");
+            VerifyHotkeyNode(Xml, "Quickload");
+
+        }
+
+        private void VerifyGame(XDocument Xml, string GameName)
+        {
+            XElement Game = Xml.Element("Configs").Element("Games").Elements("Game").Where(x => x.Element("Name").Value == GameName).SingleOrDefault();
+
+            if (Game == null)
+            {
+                Xml.Descendants("Games").FirstOrDefault().Add(new XElement("Game", new XElement("Name", GameName), new XElement("Path")));
+            }
+            Xml.Save(ConfigurationFile);
+        }
+
+        private void VerifyConfigSetting(XDocument Xml, string ConfigName)
+        {
+            XElement Config = Xml.Element("Configs").Element(ConfigName);
+            if(Config == null)
+            {
+                Xml.Descendants("Configs").FirstOrDefault().Add(new XElement(ConfigName, new XElement("Enabled", "False")));
+            }
+            Xml.Save(ConfigurationFile);
+        }
+
+        private void VerifyHotkeyNode(XDocument Xml, string HotkeyName)
+        {
+            XElement Hotkey = Xml.Element("Configs").Element("Hotkeys").Elements("Hotkey").Where(x => x.Element("Name").Value == HotkeyName).SingleOrDefault();
+
+            if (Hotkey == null)
+            {
+                Xml.Descendants("Hotkeys").FirstOrDefault().Add(new XElement("Hotkey", new XElement("Name", HotkeyName), new XElement("Modifier", "None"), new XElement("KeyCode", "None"), new XElement("Enabled", "False")));
+            }
+            Xml.Save(ConfigurationFile);
         }
 
         private void ReadGlobalConfigurations()
@@ -237,8 +335,16 @@ namespace SaveOrganizer
                 if (Node["Name"].InnerText == "ToggleReadOnly")
                 {
                     AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
-
                 }
+                if (Node["Name"].InnerText == "Quicksave")
+                {
+                    AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
+                }
+                if (Node["Name"].InnerText == "Quickload")
+                {
+                    AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
+                }
+                
             }
         }
 
@@ -561,6 +667,16 @@ namespace SaveOrganizer
             {
 
             }
+        }
+
+        private void CreateQuickSave()
+        {
+            File.Copy(GetGameSaveLocation(ComboBoxSelectGame.Text), CurrentDirectory() + "\\" + "Quicksave", true);
+        }
+
+        private void LoadQuicksave()
+        {
+            File.Copy(CurrentDirectory() + "\\" + "Quicksave", GetGameSaveLocation(ComboBoxSelectGame.Text), true);
         }
 
         private void DeleteCurrentProfile()
