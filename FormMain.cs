@@ -27,6 +27,8 @@ namespace SaveOrganizer
         private string PreviousFileName = "";
         private bool PreviousReadOnly;
         private bool EnableGlobalHotkeys = false;
+        string LastGame = "";
+        string LastProfile = "";
 
         Point StartPoint()
         {
@@ -41,8 +43,16 @@ namespace SaveOrganizer
             CreateConfigurationFile();
             VerifyXMLConfigFile();
             ReadGlobalConfigurations();
-            ComboBoxSelectGame.SelectedIndex = 0;
-            ComboBoxSelectSubDirectory.SelectedValue = "Default";
+            if(LastGame == "")
+            {
+                ComboBoxSelectGame.SelectedIndex = 0;
+                ComboBoxSelectSubDirectory.SelectedValue = "Default";
+            }
+            else
+            {
+                ComboBoxSelectGame.Text = LastGame;
+                ComboBoxSelectSubDirectory.Text = LastProfile;
+            }
             Hooker = new KeyHooker();
             Hooker.Initialize();
             Hooker.PropertyChanged += new PropertyChangedEventHandler(KeyPressed);
@@ -180,6 +190,13 @@ namespace SaveOrganizer
                 Writer.WriteEndElement();
                 Writer.WriteEndElement();
 
+                Writer.WriteStartElement("LastOpened");
+                Writer.WriteStartElement("Game");
+                Writer.WriteEndElement();
+                Writer.WriteString("Profile");
+                Writer.WriteEndElement();
+                Writer.WriteEndElement();
+
                 Writer.WriteStartElement("Hotkeys");
                 Writer.WriteStartElement("Hotkey");
                 Writer.WriteStartElement("Name");
@@ -267,6 +284,7 @@ namespace SaveOrganizer
         {
             XDocument Xml = XDocument.Load(ConfigurationFile);
 
+            VerifyLastOpened(Xml);
             VerifyConfigSetting(Xml, "AlwaysOnTop");
             VerifyConfigSetting(Xml, "EnableHotkeys");
             VerifyGame(Xml, "Dark Souls");
@@ -288,6 +306,17 @@ namespace SaveOrganizer
             if (Game == null)
             {
                 Xml.Descendants("Games").FirstOrDefault().Add(new XElement("Game", new XElement("Name", GameName), new XElement("Path")));
+            }
+            Xml.Save(ConfigurationFile);
+        }
+
+        private void VerifyLastOpened(XDocument Xml)
+        {
+            XElement LO = Xml.Element("Configs").Element("LastOpened");
+
+            if (LO == null)
+            {
+                Xml.Descendants("Configs").FirstOrDefault().Add(new XElement("LastOpened", new XElement("Game"), new XElement("Profile")));
             }
             Xml.Save(ConfigurationFile);
         }
@@ -329,6 +358,11 @@ namespace SaveOrganizer
                 TopMost = false;
             }
 
+            XmlNode LastGameNode = Xml.SelectSingleNode("//LastOpened//Game");
+            LastGame = LastGameNode.InnerText;
+            XmlNode LastProfileNode = Xml.SelectSingleNode("//LastOpened//Profile");
+            LastProfile = LastProfileNode.InnerText;
+
             XmlNode GlobalHotkeysNode = Xml.SelectSingleNode("//EnableHotkeys//Enabled");
             EnableGlobalHotkeys = Convert.ToBoolean(GlobalHotkeysNode.InnerText);
 
@@ -368,6 +402,20 @@ namespace SaveOrganizer
                 }
                 
             }
+        }
+
+        private void SaveLastOpened()
+        {
+            XmlDocument Xml = new XmlDocument();
+            Xml.Load(FormMain.ConfigurationFile);
+
+            XmlNode Game = Xml.SelectSingleNode("//LastOpened//Game");
+            Game.InnerText = ComboBoxSelectGame.Text;
+
+            XmlNode Profile = Xml.SelectSingleNode("//LastOpened//Profile");
+            Profile.InnerText = ComboBoxSelectSubDirectory.Text;
+
+            Xml.Save(ConfigurationFile);
         }
 
         private void GetFileNames(bool WithFilter)
@@ -919,6 +967,7 @@ namespace SaveOrganizer
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             Hooker.CloseHooker();
+            SaveLastOpened();
         }
 
         private void BtnSettings_Click(object sender, EventArgs e)

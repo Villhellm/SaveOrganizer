@@ -165,8 +165,5 @@
   <ItemGroup>
     <Content Include="TextTemplate.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
