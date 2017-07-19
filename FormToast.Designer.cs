@@ -37,9 +37,10 @@
             // 
             // LblToast
             // 
+            this.LblToast.BackColor = System.Drawing.Color.Teal;
             this.LblToast.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LblToast.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.LblToast.Font = new System.Drawing.Font("Gadugi", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblToast.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblToast.ForeColor = System.Drawing.Color.White;
             this.LblToast.Location = new System.Drawing.Point(0, 0);
             this.LblToast.Name = "LblToast";
@@ -66,7 +67,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(154)))), ((int)(((byte)(82)))));
+            this.BackColor = System.Drawing.Color.Teal;
             this.ClientSize = new System.Drawing.Size(366, 366);
             this.Controls.Add(this.LblToast);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;

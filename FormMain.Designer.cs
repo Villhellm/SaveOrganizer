@@ -30,8 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ComboBoxSelectGame = new System.Windows.Forms.ComboBox();
             this.CSMGameEdit = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.changeSavefileSourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,11 +81,6 @@
             this.ComboBoxSelectGame.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ComboBoxSelectGame.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ComboBoxSelectGame.FormattingEnabled = true;
-            this.ComboBoxSelectGame.Items.AddRange(new object[] {
-            "Dark Souls",
-            "Dark Souls II",
-            "Dark Souls II SotFS",
-            "Dark Souls III"});
             this.ComboBoxSelectGame.Location = new System.Drawing.Point(3, 33);
             this.ComboBoxSelectGame.Name = "ComboBoxSelectGame";
             this.ComboBoxSelectGame.Size = new System.Drawing.Size(154, 21);
@@ -168,7 +163,7 @@
             this.BtnImportSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnImportSave.Location = new System.Drawing.Point(3, 374);
             this.BtnImportSave.Name = "BtnImportSave";
-            this.BtnImportSave.Size = new System.Drawing.Size(150, 49);
+            this.BtnImportSave.Size = new System.Drawing.Size(154, 49);
             this.BtnImportSave.TabIndex = 6;
             this.BtnImportSave.Text = "Import Save";
             this.BtnImportSave.UseVisualStyleBackColor = false;
@@ -181,7 +176,7 @@
             this.BtnExportSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnExportSave.Location = new System.Drawing.Point(163, 374);
             this.BtnExportSave.Name = "BtnExportSave";
-            this.BtnExportSave.Size = new System.Drawing.Size(150, 49);
+            this.BtnExportSave.Size = new System.Drawing.Size(161, 49);
             this.BtnExportSave.TabIndex = 7;
             this.BtnExportSave.Text = "Export Selected";
             this.BtnExportSave.UseVisualStyleBackColor = false;
@@ -193,9 +188,9 @@
             this.BtnDeleteSave.BackColor = System.Drawing.Color.Firebrick;
             this.BtnDeleteSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnDeleteSave.ForeColor = System.Drawing.SystemColors.Control;
-            this.BtnDeleteSave.Location = new System.Drawing.Point(341, 374);
+            this.BtnDeleteSave.Location = new System.Drawing.Point(330, 374);
             this.BtnDeleteSave.Name = "BtnDeleteSave";
-            this.BtnDeleteSave.Size = new System.Drawing.Size(150, 49);
+            this.BtnDeleteSave.Size = new System.Drawing.Size(161, 49);
             this.BtnDeleteSave.TabIndex = 9;
             this.BtnDeleteSave.Text = "Delete Selected";
             this.BtnDeleteSave.UseVisualStyleBackColor = false;
@@ -384,14 +379,14 @@
             this.DGVSaveFiles.AllowUserToAddRows = false;
             this.DGVSaveFiles.BackgroundColor = System.Drawing.SystemColors.ControlLight;
             this.DGVSaveFiles.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGVSaveFiles.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGVSaveFiles.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.DGVSaveFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGVSaveFiles.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn1,
@@ -422,9 +417,9 @@
             // dataGridViewTextBoxColumn2
             // 
             this.dataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle2.Format = "G";
-            dataGridViewCellStyle2.NullValue = null;
-            this.dataGridViewTextBoxColumn2.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Format = "G";
+            dataGridViewCellStyle6.NullValue = null;
+            this.dataGridViewTextBoxColumn2.DefaultCellStyle = dataGridViewCellStyle6;
             this.dataGridViewTextBoxColumn2.FillWeight = 40F;
             this.dataGridViewTextBoxColumn2.HeaderText = "Date Created";
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";

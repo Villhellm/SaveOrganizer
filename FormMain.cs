@@ -11,7 +11,6 @@ using System.Security.Principal;
 using System.Drawing;
 using System.Xml.Linq;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace SaveOrganizer
 {
@@ -333,6 +332,15 @@ namespace SaveOrganizer
             XmlNode GlobalHotkeysNode = Xml.SelectSingleNode("//EnableHotkeys//Enabled");
             EnableGlobalHotkeys = Convert.ToBoolean(GlobalHotkeysNode.InnerText);
 
+            XmlNodeList GameNodes = Xml.SelectNodes("//Games//Game");
+            List<string> GameList = new List<string>();
+            foreach(XmlNode Node in GameNodes)
+            {
+                GameList.Add(Node["Name"].InnerText);
+            }
+
+            ComboBoxSelectGame.DataSource = GameList;
+
             XmlNodeList HotKeyNodes = Xml.SelectNodes("//Hotkeys//Hotkey");
 
             foreach (XmlNode Node in HotKeyNodes)
@@ -536,7 +544,15 @@ namespace SaveOrganizer
                 File.SetAttributes(FileName, OldAttributes);
             }
 
-            File.Move(FileName, NewFileName);
+            try
+            {
+                File.Move(FileName, NewFileName);
+
+            }
+            catch (IOException)
+            {
+
+            }
 
         }
 
