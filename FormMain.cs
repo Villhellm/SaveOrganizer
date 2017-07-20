@@ -43,7 +43,7 @@ namespace SaveOrganizer
             CreateConfigurationFile();
             VerifyXMLConfigFile();
             ReadGlobalConfigurations();
-            if(LastGame == "")
+            if (LastGame == "")
             {
                 ComboBoxSelectGame.SelectedIndex = 0;
                 ComboBoxSelectSubDirectory.SelectedValue = "Default";
@@ -137,13 +137,13 @@ namespace SaveOrganizer
 
         private void CreateConfigurationFile()
         {
-            Directory.CreateDirectory(AppDataRoamingPath);
-            Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls\\Default");
-            Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls II\\Default");
-            Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls II SotFS\\Default");
-            Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls III\\Default");
             if (!File.Exists(ConfigurationFile))
             {
+                Directory.CreateDirectory(AppDataRoamingPath);
+                Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls\\Default");
+                Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls II\\Default");
+                Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls II SotFS\\Default");
+                Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls III\\Default");
                 XmlTextWriter Writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8);
                 Writer.Formatting = Formatting.Indented;
                 Writer.WriteStartElement("Configs");
@@ -193,11 +193,12 @@ namespace SaveOrganizer
                 Writer.WriteStartElement("LastOpened");
                 Writer.WriteStartElement("Game");
                 Writer.WriteEndElement();
-                Writer.WriteString("Profile");
+                Writer.WriteStartElement("Profile");
                 Writer.WriteEndElement();
                 Writer.WriteEndElement();
 
                 Writer.WriteStartElement("Hotkeys");
+
                 Writer.WriteStartElement("Hotkey");
                 Writer.WriteStartElement("Name");
                 Writer.WriteString("ImportSave");
@@ -287,10 +288,6 @@ namespace SaveOrganizer
             VerifyLastOpened(Xml);
             VerifyConfigSetting(Xml, "AlwaysOnTop");
             VerifyConfigSetting(Xml, "EnableHotkeys");
-            VerifyGame(Xml, "Dark Souls");
-            VerifyGame(Xml, "Dark Souls II");
-            VerifyGame(Xml, "Dark Souls II SotFS");
-            VerifyGame(Xml, "Dark Souls III");
             VerifyHotkeyNode(Xml, "ImportSave");
             VerifyHotkeyNode(Xml, "ExportSave");
             VerifyHotkeyNode(Xml, "ToggleReadOnly");
@@ -372,6 +369,7 @@ namespace SaveOrganizer
             {
                 GameList.Add(Node["Name"].InnerText);
             }
+            GameList.Add("Add new...");
 
             ComboBoxSelectGame.DataSource = GameList;
 
@@ -875,9 +873,78 @@ namespace SaveOrganizer
 
         private void ComboBoxSelectGame_SelectedIndexChanged(object sender, EventArgs e)
         {
-            GetSubDirectories();
-            ComboBoxSelectSubDirectory.Text = "Default";
-            GetFileNames();
+            if (ComboBoxSelectGame.Text == "Add new...")
+            {
+                AddGameToList();
+            }
+            else
+            {
+                GetSubDirectories();
+                ComboBoxSelectSubDirectory.Text = "Default";
+                GetFileNames();
+            }
+        }
+
+        private void AddGameToList()
+        {
+            XDocument Xml = XDocument.Load(ConfigurationFile);
+            string GameName = "";
+            FormRename NewGame = new FormRename();
+            NewGame.ShowDialog();
+
+            if(NewGame.DialogResult == DialogResult.OK)
+            {
+                if (NewGame.NewName != "")
+                {
+                    GameName = NewGame.NewName;
+                    Xml.Descendants("Games").FirstOrDefault().Add(new XElement("Game", new XElement("Name", GameName), new XElement("Path")));
+                    Xml.Save(ConfigurationFile);
+                }
+
+                Directory.CreateDirectory(AppDataRoamingPath + "//" + GameName + "//" + "Default");
+
+                LoadGameList();
+                ComboBoxSelectGame.Text = GameName;
+            }
+        }
+
+        private void LoadGameList()
+        {
+            ComboBoxSelectGame.DataSource = null;
+            ComboBoxSelectGame.Items.Clear();
+            XmlDocument Xml = new XmlDocument();
+            Xml.Load(ConfigurationFile);
+
+            XmlNodeList GameNodes = Xml.SelectNodes("//Games//Game");
+            List<string> GameList = new List<string>();
+            foreach (XmlNode Node in GameNodes)
+            {
+                GameList.Add(Node["Name"].InnerText);
+            }
+            GameList.Add("Add new...");
+
+            ComboBoxSelectGame.DataSource = GameList;
+        }
+
+        private void DeleteGame(string GameName)
+        {
+            FormToastResponse VerifyDecision = new FormToastResponse("Are you sure you want to delete this game and all its saves?");
+            DialogResult DR = VerifyDecision.ShowDialog();
+            if(DR == DialogResult.OK)
+            {
+                if(ComboBoxSelectGame.Items.Count == 2)
+                {
+                    ActionCenter.Toast("Denied. You must have at least one game.", StartPoint(), 2);
+                }
+                else
+                {
+                    Directory.Delete(AppDataRoamingPath + "//" + GameName, true);
+                    XDocument Xml = XDocument.Load(ConfigurationFile);
+                    Xml.Element("Configs").Element("Games").Elements("Game").Where(x => x.Element("Name").Value == GameName).Remove();
+                    Xml.Save(ConfigurationFile);
+                    LoadGameList();
+                }
+            }
         }
 
         private void ComboBoxSelectSubDirectory_SelectedIndexChanged(object sender, EventArgs e)
@@ -1136,11 +1203,6 @@ namespace SaveOrganizer
             Process.Start(CurrentSubDirectory());
         }
 
-        private void setSavefileDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SetGameSaveLocation(ComboBoxSelectGame.Text);
-        }
-
         private void TxtFileSearch_Enter(object sender, EventArgs e)
         {
             if (TxtFileSearch.Text == "Search...")
@@ -1163,6 +1225,21 @@ namespace SaveOrganizer
             {
                 ActionCenter.Toast("Not running as admin, global hotkeys will not work while in game", StartPoint(), 2);
             }
+        }
+
+        private void setSavefileSourceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetGameSaveLocation(ComboBoxSelectGame.Text);
+        }
+
+        private void deleteGameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DeleteGame(ComboBoxSelectGame.Text);
+        }
+
+        private void deleteGameToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            DeleteGame(ComboBoxSelectGame.Text);
         }
     }
 }

@@ -30,8 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ComboBoxSelectGame = new System.Windows.Forms.ComboBox();
             this.CSMGameEdit = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.changeSavefileSourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,6 +47,9 @@
             this.TTProfile = new System.Windows.Forms.ToolTip(this.components);
             this.TSMain = new System.Windows.Forms.ToolStrip();
             this.TSDDFile = new System.Windows.Forms.ToolStripDropDownButton();
+            this.editCurrentGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setSavefileSourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editCurrentProfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,7 +60,6 @@
             this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openInFileExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.setSavefileDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TSBtnHelp = new System.Windows.Forms.ToolStripButton();
             this.LblGame = new System.Windows.Forms.Label();
@@ -68,6 +70,7 @@
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.TxtFileSearch = new System.Windows.Forms.TextBox();
+            this.deleteGameToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.CSMGameEdit.SuspendLayout();
             this.CMSProfileEdit.SuspendLayout();
             this.TSMain.SuspendLayout();
@@ -91,9 +94,10 @@
             // CSMGameEdit
             // 
             this.CSMGameEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteGameToolStripMenuItem1,
             this.changeSavefileSourceToolStripMenuItem});
             this.CSMGameEdit.Name = "CSMGameEdit";
-            this.CSMGameEdit.Size = new System.Drawing.Size(198, 26);
+            this.CSMGameEdit.Size = new System.Drawing.Size(198, 70);
             // 
             // changeSavefileSourceToolStripMenuItem
             // 
@@ -212,10 +216,10 @@
             // 
             this.TSDDFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.TSDDFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editCurrentGameToolStripMenuItem,
             this.editCurrentProfileToolStripMenuItem,
             this.addProfileToolStripMenuItem,
             this.selectedSaveToolStripMenuItem,
-            this.setSavefileDirectoryToolStripMenuItem,
             this.settingsToolStripMenuItem});
             this.TSDDFile.Image = ((System.Drawing.Image)(resources.GetObject("TSDDFile.Image")));
             this.TSDDFile.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -223,6 +227,29 @@
             this.TSDDFile.Size = new System.Drawing.Size(38, 22);
             this.TSDDFile.Text = "File";
             this.TSDDFile.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            // 
+            // editCurrentGameToolStripMenuItem
+            // 
+            this.editCurrentGameToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteGameToolStripMenuItem,
+            this.setSavefileSourceToolStripMenuItem});
+            this.editCurrentGameToolStripMenuItem.Name = "editCurrentGameToolStripMenuItem";
+            this.editCurrentGameToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.editCurrentGameToolStripMenuItem.Text = "Edit Current Game";
+            // 
+            // deleteGameToolStripMenuItem
+            // 
+            this.deleteGameToolStripMenuItem.Name = "deleteGameToolStripMenuItem";
+            this.deleteGameToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.deleteGameToolStripMenuItem.Text = "Delete Game";
+            this.deleteGameToolStripMenuItem.Click += new System.EventHandler(this.deleteGameToolStripMenuItem_Click);
+            // 
+            // setSavefileSourceToolStripMenuItem
+            // 
+            this.setSavefileSourceToolStripMenuItem.Name = "setSavefileSourceToolStripMenuItem";
+            this.setSavefileSourceToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.setSavefileSourceToolStripMenuItem.Text = "Set Savefile Source";
+            this.setSavefileSourceToolStripMenuItem.Click += new System.EventHandler(this.setSavefileSourceToolStripMenuItem_Click);
             // 
             // editCurrentProfileToolStripMenuItem
             // 
@@ -301,13 +328,6 @@
             this.openInFileExplorerToolStripMenuItem.Text = "Open in File Explorer";
             this.openInFileExplorerToolStripMenuItem.Click += new System.EventHandler(this.openInFileExplorerToolStripMenuItem_Click);
             // 
-            // setSavefileDirectoryToolStripMenuItem
-            // 
-            this.setSavefileDirectoryToolStripMenuItem.Name = "setSavefileDirectoryToolStripMenuItem";
-            this.setSavefileDirectoryToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
-            this.setSavefileDirectoryToolStripMenuItem.Text = "Set Savefile Source";
-            this.setSavefileDirectoryToolStripMenuItem.Click += new System.EventHandler(this.setSavefileDirectoryToolStripMenuItem_Click);
-            // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
@@ -379,14 +399,14 @@
             this.DGVSaveFiles.AllowUserToAddRows = false;
             this.DGVSaveFiles.BackgroundColor = System.Drawing.SystemColors.ControlLight;
             this.DGVSaveFiles.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGVSaveFiles.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGVSaveFiles.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.DGVSaveFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGVSaveFiles.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn1,
@@ -417,9 +437,9 @@
             // dataGridViewTextBoxColumn2
             // 
             this.dataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle6.Format = "G";
-            dataGridViewCellStyle6.NullValue = null;
-            this.dataGridViewTextBoxColumn2.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle4.Format = "G";
+            dataGridViewCellStyle4.NullValue = null;
+            this.dataGridViewTextBoxColumn2.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridViewTextBoxColumn2.FillWeight = 40F;
             this.dataGridViewTextBoxColumn2.HeaderText = "Date Created";
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
@@ -445,6 +465,13 @@
             this.TxtFileSearch.TextChanged += new System.EventHandler(this.TxtFileSearch_TextChanged);
             this.TxtFileSearch.Enter += new System.EventHandler(this.TxtFileSearch_Enter);
             this.TxtFileSearch.Leave += new System.EventHandler(this.TxtFileSearch_Leave);
+            // 
+            // deleteGameToolStripMenuItem1
+            // 
+            this.deleteGameToolStripMenuItem1.Name = "deleteGameToolStripMenuItem1";
+            this.deleteGameToolStripMenuItem1.Size = new System.Drawing.Size(197, 22);
+            this.deleteGameToolStripMenuItem1.Text = "Delete Game";
+            this.deleteGameToolStripMenuItem1.Click += new System.EventHandler(this.deleteGameToolStripMenuItem1_Click);
             // 
             // FormMain
             // 
@@ -501,13 +528,16 @@
         private System.Windows.Forms.ToolStripMenuItem openInFileExplorerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton TSBtnHelp;
-        private System.Windows.Forms.ToolStripMenuItem setSavefileDirectoryToolStripMenuItem;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.DataGridView DGVSaveFiles;
         private System.Windows.Forms.TextBox TxtFileSearch;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn1;
+        private System.Windows.Forms.ToolStripMenuItem editCurrentGameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteGameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setSavefileSourceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteGameToolStripMenuItem1;
     }
 }
 
