@@ -42,6 +42,8 @@
             this.CBQuicksave = new System.Windows.Forms.CheckBox();
             this.TxtQuickLoadHotkey = new System.Windows.Forms.Label();
             this.CBQuickload = new System.Windows.Forms.CheckBox();
+            this.TxtWarp = new System.Windows.Forms.Label();
+            this.CBWarp = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // CBToggleGlobalHotkeys
@@ -100,7 +102,7 @@
             // 
             // BtnSave
             // 
-            this.BtnSave.Location = new System.Drawing.Point(52, 267);
+            this.BtnSave.Location = new System.Drawing.Point(52, 311);
             this.BtnSave.Name = "BtnSave";
             this.BtnSave.Size = new System.Drawing.Size(75, 23);
             this.BtnSave.TabIndex = 8;
@@ -110,7 +112,7 @@
             // 
             // BtnCancel
             // 
-            this.BtnCancel.Location = new System.Drawing.Point(194, 267);
+            this.BtnCancel.Location = new System.Drawing.Point(194, 311);
             this.BtnCancel.Name = "BtnCancel";
             this.BtnCancel.Size = new System.Drawing.Size(75, 23);
             this.BtnCancel.TabIndex = 9;
@@ -200,11 +202,36 @@
             this.CBQuickload.Text = "Quick-Load";
             this.CBQuickload.UseVisualStyleBackColor = true;
             // 
+            // TxtWarp
+            // 
+            this.TxtWarp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TxtWarp.Enabled = false;
+            this.TxtWarp.Location = new System.Drawing.Point(205, 269);
+            this.TxtWarp.Name = "TxtWarp";
+            this.TxtWarp.Size = new System.Drawing.Size(184, 24);
+            this.TxtWarp.TabIndex = 19;
+            this.TxtWarp.Click += new System.EventHandler(this.SaveHotkey_Click);
+            this.TxtWarp.Enter += new System.EventHandler(this.SaveHotkey_Enter);
+            this.TxtWarp.Leave += new System.EventHandler(this.SaveHotkey_Leave);
+            // 
+            // CBWarp
+            // 
+            this.CBWarp.AutoSize = true;
+            this.CBWarp.Enabled = false;
+            this.CBWarp.Location = new System.Drawing.Point(68, 269);
+            this.CBWarp.Name = "CBWarp";
+            this.CBWarp.Size = new System.Drawing.Size(123, 17);
+            this.CBWarp.TabIndex = 18;
+            this.CBWarp.Text = "Warp to Last Spawn";
+            this.CBWarp.UseVisualStyleBackColor = true;
+            // 
             // FormSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(401, 316);
+            this.ClientSize = new System.Drawing.Size(401, 358);
+            this.Controls.Add(this.TxtWarp);
+            this.Controls.Add(this.CBWarp);
             this.Controls.Add(this.TxtQuickLoadHotkey);
             this.Controls.Add(this.CBQuickload);
             this.Controls.Add(this.TxtQuickSaveHotkey);
@@ -244,5 +271,7 @@
         private System.Windows.Forms.CheckBox CBQuicksave;
         private System.Windows.Forms.Label TxtQuickLoadHotkey;
         private System.Windows.Forms.CheckBox CBQuickload;
+        private System.Windows.Forms.Label TxtWarp;
+        private System.Windows.Forms.CheckBox CBWarp;
     }
 }

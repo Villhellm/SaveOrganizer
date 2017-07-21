@@ -77,9 +77,11 @@ namespace SaveOrganizer
                         switch (HotK.HotkeyName)
                         {
                             case "ExportSave":
+                                dsHooker.ExitToMainMenu();
                                 ExportSave();
                                 break;
                             case "ImportSave":
+                                dsHooker.ExitToMainMenu();
                                 ImportCurrentSave();
                                 break;
                             case "ToggleReadOnly":
@@ -102,6 +104,16 @@ namespace SaveOrganizer
                                 {
                                     dsHooker.ExitToMainMenu();
                                     LoadQuicksave();
+                                }
+                                else
+                                {
+                                    ActionCenter.Toast("That only works for Dark Souls 1, oops :/", StartPoint(), 1);
+                                }
+                                break;
+                            case "Warp":
+                                if (ComboBoxSelectGame.Text == "Dark Souls")
+                                {
+                                    dsHooker.WarpToStart();
                                 }
                                 else
                                 {
@@ -274,6 +286,21 @@ namespace SaveOrganizer
                 Writer.WriteEndElement();
                 Writer.WriteEndElement();
 
+                Writer.WriteStartElement("Hotkey");
+                Writer.WriteStartElement("Name");
+                Writer.WriteString("Warp");
+                Writer.WriteEndElement();
+                Writer.WriteStartElement("Modifier");
+                Writer.WriteString("None");
+                Writer.WriteEndElement();
+                Writer.WriteStartElement("KeyCode");
+                Writer.WriteString("None");
+                Writer.WriteEndElement();
+                Writer.WriteStartElement("Enabled");
+                Writer.WriteString("False");
+                Writer.WriteEndElement();
+                Writer.WriteEndElement();
+
                 Writer.WriteEndElement();
 
                 Writer.WriteEndElement();
@@ -293,6 +320,7 @@ namespace SaveOrganizer
             VerifyHotkeyNode(Xml, "ToggleReadOnly");
             VerifyHotkeyNode(Xml, "Quicksave");
             VerifyHotkeyNode(Xml, "Quickload");
+            VerifyHotkeyNode(Xml, "Warp");
 
         }
 
@@ -398,7 +426,11 @@ namespace SaveOrganizer
                 {
                     AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
                 }
-                
+                if (Node["Name"].InnerText == "Warp")
+                {
+                    AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
+                }
+
             }
         }
 

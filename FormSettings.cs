@@ -123,13 +123,25 @@ namespace SaveOrganizer
                         TxtQuickLoadHotkey.Text = Node["KeyCode"].InnerText;
                     }
                 }
+                if (Node["Name"].InnerText == "Warp")
+                {
+                    CBWarp.Checked = Convert.ToBoolean(Node["Enabled"].InnerText);
+                    if (Node["Modifier"].InnerText != "None")
+                    {
+                        TxtWarp.Text = Node["Modifier"].InnerText + " + " + Node["KeyCode"].InnerText;
+                    }
+                    else
+                    {
+                        TxtWarp.Text = Node["KeyCode"].InnerText;
+                    }
+                }
             }
         }
 
         private void CBToggleGlobalHotkeys_CheckedChanged(object sender, EventArgs e)
         {
-            List<CheckBox> HotKeyEnablers = new List<CheckBox>() { CBExportSelectedSave, CBImportCurrentSave, CBToggleReadOnly, CBQuicksave, CBQuickload };
-            List<Label> HotKeyEnablersBox = new List<Label>() { TxtExportSaveHotkey, TxtImportSaveHotkey, TxtToggleReadOnlyHotkey, TxtQuickSaveHotkey, TxtQuickLoadHotkey };
+            List<CheckBox> HotKeyEnablers = new List<CheckBox>() { CBExportSelectedSave, CBImportCurrentSave, CBToggleReadOnly, CBQuicksave, CBQuickload, CBWarp };
+            List<Label> HotKeyEnablersBox = new List<Label>() { TxtExportSaveHotkey, TxtImportSaveHotkey, TxtToggleReadOnlyHotkey, TxtQuickSaveHotkey, TxtQuickLoadHotkey, TxtWarp };
 
             foreach (CheckBox Enabler in HotKeyEnablers)
             {
@@ -184,6 +196,10 @@ namespace SaveOrganizer
                 if (Node["Name"].InnerText == "Quickload")
                 {
                     SaveHotkey(Node, CBQuickload, TxtQuickLoadHotkey);
+                }
+                if (Node["Name"].InnerText == "Warp")
+                {
+                    SaveHotkey(Node, CBWarp, TxtWarp);
                 }
             }
 
