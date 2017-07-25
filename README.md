@@ -48,6 +48,7 @@ If you want to use the hotkeys in-game, make sure you are running the game as Ad
   USING HOTKEYS
   
   When hotkeys are enabled, press the saved key to do the action it was saved to. Here is a list of the hotekys and what they do:
+    
     "Export Selected Save" this will export whatever save you select in the savefile list (select files by clicking on them. As long as      any cell in that row is blue, the savefile is selected) to the source file. 
     
     "Import Current Save" this will import the source savefile and add it to your savefile list. You can rename it later.
