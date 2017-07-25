@@ -11,6 +11,7 @@ using System.Security.Principal;
 using System.Drawing;
 using System.Xml.Linq;
 using System.Linq;
+using System.Threading;
 
 namespace SaveOrganizer
 {
@@ -92,7 +93,10 @@ namespace SaveOrganizer
                                 if(ComboBoxSelectGame.Text == "Dark Souls")
                                 {
                                     dsHooker.ExitToMainMenu();
+                                    Thread.Sleep(1500);
+                                    while (dsHooker.ReturnAddressValue((int)dsHooker.ReturnAddressValue(0x0019EEE4) + 0x10) != 27);
                                     CreateQuickSave();
+                                    dsHooker.LoadSaveMenu();
                                 }
                                 else
                                 {
@@ -103,7 +107,10 @@ namespace SaveOrganizer
                                 if (ComboBoxSelectGame.Text == "Dark Souls")
                                 {
                                     dsHooker.ExitToMainMenu();
+                                    Thread.Sleep(1500);
+                                    while (dsHooker.ReturnAddressValue((int)dsHooker.ReturnAddressValue(0x0019EEE4) + 0x10) != 27);
                                     LoadQuicksave();
+                                    dsHooker.LoadSaveMenu();
                                 }
                                 else
                                 {

@@ -56,11 +56,19 @@ namespace SaveOrganizer
             WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(1), 4, 0);
         }
 
-        private uint ReturnAddressValue(int Address)
+        public uint ReturnAddressValue(int Address)
         {
+            AttachToProcess();
             byte[] Intermediate = new byte[4];
             ReadProcessMemory(_targetProcessHandle, Address, Intermediate, 4, 0);
             return BitConverter.ToUInt32(Intermediate, 0);
+        }
+
+        public void LoadSaveMenu()
+        {
+            AttachToProcess();
+            WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x0019EEE4)+ 0x108), BitConverter.GetBytes(3), 4, 0);
+            WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x0019EEE4) + 0x114), BitConverter.GetBytes(2), 4, 0);
         }
     }
 }
