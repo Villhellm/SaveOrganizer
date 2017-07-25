@@ -791,7 +791,10 @@ namespace SaveOrganizer
 
         private void LoadQuicksave()
         {
-            File.Copy(CurrentDirectory() + "\\" + "Quicksave", GetGameSaveLocation(ComboBoxSelectGame.Text), true);
+            if(File.Exists(CurrentDirectory() + "\\" + "Quicksave"))
+            {
+                File.Copy(CurrentDirectory() + "\\" + "Quicksave", GetGameSaveLocation(ComboBoxSelectGame.Text), true);
+            }
         }
 
         private void DeleteCurrentProfile()
