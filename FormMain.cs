@@ -78,11 +78,9 @@ namespace SaveOrganizer
                         switch (HotK.HotkeyName)
                         {
                             case "ExportSave":
-                                dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(ExportSave);
                                 ExportSave();
                                 break;
                             case "ImportSave":
-                                dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(ImportCurrentSave);
                                 ImportCurrentSave();
                                 break;
                             case "ToggleReadOnly":
@@ -93,7 +91,6 @@ namespace SaveOrganizer
                                 if(ComboBoxSelectGame.Text == "Dark Souls")
                                 {
                                     dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(CreateQuickSave);
-                                    CreateQuickSave();
                                 }
                                 else
                                 {
@@ -104,7 +101,6 @@ namespace SaveOrganizer
                                 if (ComboBoxSelectGame.Text == "Dark Souls")
                                 {
                                     dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(LoadQuicksave);
-                                    LoadQuicksave();
                                 }
                                 else
                                 {
