@@ -78,12 +78,10 @@ namespace SaveOrganizer
                         switch (HotK.HotkeyName)
                         {
                             case "ExportSave":
-                                dsHooker.ExitToMainMenu();
-                                ExportSave();
+                                dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(ExportSave);
                                 break;
                             case "ImportSave":
-                                dsHooker.ExitToMainMenu();
-                                ImportCurrentSave();
+                                dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(ImportCurrentSave);
                                 break;
                             case "ToggleReadOnly":
                                 FileInfo SelectedSave = new FileInfo(GetGameSaveLocation(ComboBoxSelectGame.Text));
@@ -92,11 +90,7 @@ namespace SaveOrganizer
                             case "Quicksave":
                                 if(ComboBoxSelectGame.Text == "Dark Souls")
                                 {
-                                    dsHooker.ExitToMainMenu();
-                                    Thread.Sleep(1500);
-                                    while (dsHooker.ReturnAddressValue((int)dsHooker.ReturnAddressValue(0x0019EEE4) + 0x10) != 27);
-                                    CreateQuickSave();
-                                    dsHooker.LoadSaveMenu();
+                                    dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(CreateQuickSave);
                                 }
                                 else
                                 {
@@ -106,11 +100,7 @@ namespace SaveOrganizer
                             case "Quickload":
                                 if (ComboBoxSelectGame.Text == "Dark Souls")
                                 {
-                                    dsHooker.ExitToMainMenu();
-                                    Thread.Sleep(1500);
-                                    while (dsHooker.ReturnAddressValue((int)dsHooker.ReturnAddressValue(0x0019EEE4) + 0x10) != 27);
-                                    LoadQuicksave();
-                                    dsHooker.LoadSaveMenu();
+                                    dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(LoadQuicksave);
                                 }
                                 else
                                 {

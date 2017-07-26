@@ -48,6 +48,8 @@ namespace SaveOrganizer
             Thread.Sleep(100);
             WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(0), 4, 0);
 
+            while (ReturnAddressValue((int)ReturnAddressValue(0x01378680) + 0xF8) != 1) ;
+            WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x01378680) + 0xF8), BitConverter.GetBytes(2), 4, 0);
         }
 
         public void WarpToStart()
@@ -65,10 +67,42 @@ namespace SaveOrganizer
         }
 
         public void LoadSaveMenu()
-        {
+        {            
             AttachToProcess();
             WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x0019EEE4)+ 0x108), BitConverter.GetBytes(3), 4, 0);
             WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x0019EEE4) + 0x114), BitConverter.GetBytes(2), 4, 0);
+        }
+
+        public void QuitToMenuDoThingsThenLoadSaveMenu(Action DoThings)
+        {
+            if (InGame())
+            {
+                ExitToMainMenu();
+                Thread.Sleep(100);
+                while (ReturnAddressValue((int)ReturnAddressValue(0x0019EEE4) + 0x10) != 27) ;
+                DoThings();
+                LoadSaveMenu();
+            }
+            else
+            {
+                DoThings();
+            }
+        }
+
+        private bool InGame()
+        {
+            uint Now = ReturnAddressValue((int)ReturnAddressValue(0x1378700) + 0x66);
+            uint Then = ReturnAddressValue((int)ReturnAddressValue(0x1378700) + 0x66);
+            if (Now !=0)
+            {
+                Thread.Sleep(20);
+                Now = ReturnAddressValue((int)ReturnAddressValue(0x1378700) + 0x66);
+                if(Now != Then && Now != 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
