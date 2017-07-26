@@ -47,8 +47,14 @@ namespace SaveOrganizer
             WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(2), 4, 0);
             Thread.Sleep(100);
             WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(0), 4, 0);
-
-            while (ReturnAddressValue((int)ReturnAddressValue(0x01378680) + 0xF8) != 1) ;
+            Thread.Sleep(50);
+            while (ReturnAddressValue((int)ReturnAddressValue(0x01378680) + 0xF8) != 1)
+            {
+                if(ReturnAddressValue((int)ReturnAddressValue(0x0019EEE4)) != 0x00786D36)
+                {
+                    break;
+                }
+            }
             WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x01378680) + 0xF8), BitConverter.GetBytes(2), 4, 0);
         }
 
