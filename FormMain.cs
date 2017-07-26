@@ -79,9 +79,11 @@ namespace SaveOrganizer
                         {
                             case "ExportSave":
                                 dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(ExportSave);
+                                ExportSave();
                                 break;
                             case "ImportSave":
                                 dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(ImportCurrentSave);
+                                ImportCurrentSave();
                                 break;
                             case "ToggleReadOnly":
                                 FileInfo SelectedSave = new FileInfo(GetGameSaveLocation(ComboBoxSelectGame.Text));
@@ -91,6 +93,7 @@ namespace SaveOrganizer
                                 if(ComboBoxSelectGame.Text == "Dark Souls")
                                 {
                                     dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(CreateQuickSave);
+                                    CreateQuickSave();
                                 }
                                 else
                                 {
@@ -101,6 +104,7 @@ namespace SaveOrganizer
                                 if (ComboBoxSelectGame.Text == "Dark Souls")
                                 {
                                     dsHooker.QuitToMenuDoThingsThenLoadSaveMenu(LoadQuicksave);
+                                    LoadQuicksave();
                                 }
                                 else
                                 {
@@ -776,6 +780,7 @@ namespace SaveOrganizer
 
         private void CreateQuickSave()
         {
+            SetReadOnly(CurrentDirectory() + "\\" + "Quicksave", false);
             File.Copy(GetGameSaveLocation(ComboBoxSelectGame.Text), CurrentDirectory() + "\\" + "Quicksave", true);
         }
 
@@ -783,6 +788,7 @@ namespace SaveOrganizer
         {
             if(File.Exists(CurrentDirectory() + "\\" + "Quicksave"))
             {
+                SetReadOnly(GetGameSaveLocation(ComboBoxSelectGame.Text), false);
                 File.Copy(CurrentDirectory() + "\\" + "Quicksave", GetGameSaveLocation(ComboBoxSelectGame.Text), true);
             }
         }
