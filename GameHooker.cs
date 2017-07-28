@@ -52,9 +52,11 @@ namespace SaveOrganizer
             {
                 if(ReturnAddressValue(0x0019EEE4) != 0x00786D36)
                 {
-                    break;
+                    return;
                 }
             }
+            Thread.Sleep(50);
+            WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x01378680) + 0xF8), BitConverter.GetBytes(2), 4, 0);
             Thread.Sleep(50);
             WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x01378680) + 0xF8), BitConverter.GetBytes(2), 4, 0);
         }
