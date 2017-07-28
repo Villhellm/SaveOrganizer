@@ -45,16 +45,17 @@ namespace SaveOrganizer
         {
             AttachToProcess();
             WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(2), 4, 0);
-            Thread.Sleep(100);
+            Thread.Sleep(10);
             WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(0), 4, 0);
-            Thread.Sleep(50);
-            while (ReturnAddressValue((int)ReturnAddressValue(0x01378680) + 0xF8) != 1)
+            Thread.Sleep(10);
+            while (ReturnAddressValueWithVerification((int)ReturnAddressValue(0x01378680) + 0xF8) != 1)
             {
                 if(ReturnAddressValue(0x0019EEE4) != 0x00786D36)
                 {
                     break;
                 }
             }
+            Thread.Sleep(50);
             WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x01378680) + 0xF8), BitConverter.GetBytes(2), 4, 0);
         }
 
@@ -70,6 +71,25 @@ namespace SaveOrganizer
             byte[] Intermediate = new byte[4];
             ReadProcessMemory(_targetProcessHandle, Address, Intermediate, 4, 0);
             return BitConverter.ToUInt32(Intermediate, 0);
+        }
+
+        public uint ReturnAddressValueWithVerification(int Address)
+        {
+            int TimeOutCount = 0;
+            uint Now = 0;
+            uint Then = ReturnAddressValue(Address);
+            while (Then != Now || TimeOutCount <= 10)
+            {
+                Thread.Sleep(10);
+                Now = ReturnAddressValue(Address);
+                if (Now == Then)
+                {
+                    return Now;
+                }
+
+                TimeOutCount++;
+            }
+            return 69696969;
         }
 
         public void LoadSaveMenu()
