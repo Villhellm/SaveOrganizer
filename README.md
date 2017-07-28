@@ -62,3 +62,6 @@ If you want to use the hotkeys in-game, make sure you are running the game as Ad
     "Warp to Last Spawn" this currently only works in Dark Souls 1. This will teleport your character back to your load point. If you   haven't died, it will be wherever your savefile spawn is. If you have died, it will take you back to your last bonfire. This can be a useful practice tool, and good for timing running segments.
     
     
+MISC/Troubleshooting
+All files are saved in AppData\Roaming\SaveOrganizer
+If you are having any issues with hotkeys or saving settings, try deleting the Config.xml in this folder.
