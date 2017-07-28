@@ -50,7 +50,7 @@ namespace SaveOrganizer
             Thread.Sleep(50);
             while (ReturnAddressValue((int)ReturnAddressValue(0x01378680) + 0xF8) != 1)
             {
-                if(ReturnAddressValue(0x0019EEE4) != 0x00786D36)
+                if((0x0019EEE4) != 0x00786D36)
                 {
                     break;
                 }
