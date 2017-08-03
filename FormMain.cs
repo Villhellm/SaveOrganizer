@@ -30,6 +30,7 @@ namespace SaveOrganizer
         private bool EnableGlobalHotkeys = false;
         string LastGame = "";
         string LastProfile = "";
+        string TempDel = "";
 
         Point StartPoint()
         {
@@ -760,7 +761,42 @@ namespace SaveOrganizer
             try
             {
                 SetReadOnly(GetGameSaveLocation(ComboBoxSelectGame.Text), false);
+                File.Copy(GetGameSaveLocation(ComboBoxSelectGame.Text), AppDataRoamingPath + "\\" + "TempExp", true);
                 File.Copy(CurrentSubDirectory() + "\\" + DGVSaveFiles.CurrentRow.Cells[0].Value.ToString(), GetGameSaveLocation(ComboBoxSelectGame.Text), true);
+            }
+            catch (ArgumentException)
+            {
+
+            }
+            catch (NullReferenceException)
+            {
+
+            }
+        }
+
+        private void UndoExport()
+        {
+            try
+            {
+                File.Copy(AppDataRoamingPath + "\\" + "TempExp", GetGameSaveLocation(ComboBoxSelectGame.Text), true);
+            }
+            catch (ArgumentException)
+            {
+
+            }
+            catch (NullReferenceException)
+            {
+
+            }
+        }
+
+        private void UndoDelete()
+        {
+            try
+            {
+                File.Copy(AppDataRoamingPath + "\\" + "TempDel", CurrentSubDirectory() + "\\" + TempDel, true);
+                File.Delete(AppDataRoamingPath + "\\" + "TempDel");
+                GetFileNames();
             }
             catch (ArgumentException)
             {
@@ -832,6 +868,8 @@ namespace SaveOrganizer
 
                 OldAttributes = OldAttributes & ~FileAttributes.ReadOnly;
                 File.SetAttributes(FileName, OldAttributes);
+                TempDel = DGVSaveFiles.CurrentRow.Cells[0].Value.ToString();
+                File.Copy(FileName, AppDataRoamingPath + "\\" + "TempDel", true);
 
                 File.Delete(FileName);
                 DGVSaveFiles.Rows.RemoveAt(DGVSaveFiles.CurrentRow.Index);
@@ -1076,11 +1114,13 @@ namespace SaveOrganizer
 
         private void BtnDeleteSave_Click(object sender, EventArgs e)
         {
+            undoFileDeleteToolStripMenuItem.Enabled = true;
             DeleteSelectedSave();
         }
 
         private void BtnExportSave_Click(object sender, EventArgs e)
         {
+            undoExportToolStripMenuItem.Enabled = true;
             ExportSave();
         }
 
@@ -1282,6 +1322,18 @@ namespace SaveOrganizer
         private void deleteGameToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             DeleteGame(ComboBoxSelectGame.Text);
+        }
+
+        private void undoFileDeleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UndoDelete();
+            undoFileDeleteToolStripMenuItem.Enabled = false;
+        }
+
+        private void undoExportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UndoExport();
+            undoExportToolStripMenuItem.Enabled = false;
         }
     }
 }

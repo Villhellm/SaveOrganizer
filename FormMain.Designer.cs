@@ -61,6 +61,8 @@
             this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openInFileExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoFileDeleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TSBtnHelp = new System.Windows.Forms.ToolStripButton();
             this.LblGame = new System.Windows.Forms.Label();
@@ -227,6 +229,8 @@
             this.editCurrentProfileToolStripMenuItem,
             this.addProfileToolStripMenuItem,
             this.selectedSaveToolStripMenuItem,
+            this.undoFileDeleteToolStripMenuItem,
+            this.undoExportToolStripMenuItem,
             this.settingsToolStripMenuItem});
             this.TSDDFile.Image = ((System.Drawing.Image)(resources.GetObject("TSDDFile.Image")));
             this.TSDDFile.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -334,6 +338,22 @@
             this.openInFileExplorerToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.openInFileExplorerToolStripMenuItem.Text = "Open in File Explorer";
             this.openInFileExplorerToolStripMenuItem.Click += new System.EventHandler(this.openInFileExplorerToolStripMenuItem_Click);
+            // 
+            // undoFileDeleteToolStripMenuItem
+            // 
+            this.undoFileDeleteToolStripMenuItem.Enabled = false;
+            this.undoFileDeleteToolStripMenuItem.Name = "undoFileDeleteToolStripMenuItem";
+            this.undoFileDeleteToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.undoFileDeleteToolStripMenuItem.Text = "Undo File Delete";
+            this.undoFileDeleteToolStripMenuItem.Click += new System.EventHandler(this.undoFileDeleteToolStripMenuItem_Click);
+            // 
+            // undoExportToolStripMenuItem
+            // 
+            this.undoExportToolStripMenuItem.Enabled = false;
+            this.undoExportToolStripMenuItem.Name = "undoExportToolStripMenuItem";
+            this.undoExportToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.undoExportToolStripMenuItem.Text = "Undo Export";
+            this.undoExportToolStripMenuItem.Click += new System.EventHandler(this.undoExportToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -538,6 +558,8 @@
         private System.Windows.Forms.ToolStripMenuItem deleteGameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setSavefileSourceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteGameToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem undoFileDeleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem undoExportToolStripMenuItem;
     }
 }
 
