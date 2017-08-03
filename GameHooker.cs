@@ -24,6 +24,7 @@ namespace SaveOrganizer
 
         [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
         static extern IntPtr VirtualAllocEx(IntPtr hProcess, int lpAddress, int dwSize, int flAllocationType, int flProtect);
+
         [DllImport("kernel32.dll")]
         public static extern bool ReadProcessMemory(IntPtr hProcess,int lpBaseAddress, byte[] lpBuffer, int dwSize, int lpNumberOfBytesRead);
 
@@ -45,19 +46,18 @@ namespace SaveOrganizer
         {
             AttachToProcess();
             WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(2), 4, 0);
-            Thread.Sleep(10);
+            Thread.Sleep(15);
             WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(0), 4, 0);
             Thread.Sleep(10);
-            while (ReturnAddressValueWithVerification((int)ReturnAddressValue(0x01378680) + 0xF8) != 1)
+
+            while (ReturnAddressValue((int)ReturnAddressValue(0x01378680) + 0xF8) != 1)
             {
-                if(ReturnAddressValue(0x0019EEE4) != 0x00786D36)
+                if(ReturnAddressValueWithVerification(0x0019EEE4) != 0x00786D36)
                 {
                     return;
                 }
             }
-            Thread.Sleep(50);
-            WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x01378680) + 0xF8), BitConverter.GetBytes(2), 4, 0);
-            Thread.Sleep(50);
+
             WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x01378680) + 0xF8), BitConverter.GetBytes(2), 4, 0);
         }
 
@@ -77,20 +77,23 @@ namespace SaveOrganizer
 
         public uint ReturnAddressValueWithVerification(int Address)
         {
-            int TimeOutCount = 0;
-            uint Now = 0;
-            uint Then = ReturnAddressValue(Address);
-            while (Then != Now || TimeOutCount <= 10)
+            List<uint> Reads = new List<uint>();
+            for (int i = 0; i < 10; i++)
             {
-                Thread.Sleep(10);
-                Now = ReturnAddressValue(Address);
-                if (Now == Then)
-                {
-                    return Now;
-                }
-
-                TimeOutCount++;
+                Reads.Add(ReturnAddressValue(Address));
             }
+
+            int Count;
+
+            foreach (uint Adrs in Reads)
+            {
+                Count = (from temp in Reads where temp.Equals(Adrs) select temp).Count();
+                if (Count >= 5)
+                {
+                    return Adrs;
+                }
+            }
+
             return 69696969;
         }
 
