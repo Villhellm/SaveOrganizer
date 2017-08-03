@@ -384,7 +384,6 @@ namespace SaveOrganizer
             LastGame = LastGameNode.InnerText;
             XmlNode LastProfileNode = Xml.SelectSingleNode("//LastOpened//Profile");
             LastProfile = LastProfileNode.InnerText;
-
             XmlNode GlobalHotkeysNode = Xml.SelectSingleNode("//EnableHotkeys//Enabled");
             EnableGlobalHotkeys = Convert.ToBoolean(GlobalHotkeysNode.InnerText);
 
@@ -427,7 +426,6 @@ namespace SaveOrganizer
                 {
                     AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
                 }
-
             }
         }
 
@@ -1113,6 +1111,16 @@ namespace SaveOrganizer
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenSettingsForm();
+            if (LastGame == "")
+            {
+                ComboBoxSelectGame.SelectedIndex = 0;
+                ComboBoxSelectSubDirectory.SelectedValue = "Default";
+            }
+            else
+            {
+                ComboBoxSelectGame.Text = LastGame;
+                ComboBoxSelectSubDirectory.Text = LastProfile;
+            }
         }
 
         private void TSBtnHelp_Click(object sender, EventArgs e)
