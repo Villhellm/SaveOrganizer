@@ -11,6 +11,7 @@ using System.Security.Principal;
 using System.Drawing;
 using System.Xml.Linq;
 using System.Linq;
+using System.Net;
 using System.Threading;
 
 namespace SaveOrganizer
@@ -31,6 +32,8 @@ namespace SaveOrganizer
         string LastGame = "";
         string LastProfile = "";
         string TempDel = "";
+        string LatestCommitID = "";
+        string CurrentCommitID = "";
 
         Point StartPoint()
         {
@@ -207,6 +210,10 @@ namespace SaveOrganizer
                 Writer.WriteEndElement();
                 Writer.WriteEndElement();
 
+                Writer.WriteStartElement("LastCommitID");
+                Writer.WriteString("none");
+                Writer.WriteEndElement();
+
                 Writer.WriteStartElement("Hotkeys");
 
                 Writer.WriteStartElement("Hotkey");
@@ -313,6 +320,7 @@ namespace SaveOrganizer
             VerifyLastOpened(Xml);
             VerifyConfigSetting(Xml, "AlwaysOnTop");
             VerifyConfigSetting(Xml, "EnableHotkeys");
+            VerifyCommitNode(Xml);
             VerifyHotkeyNode(Xml, "ImportSave");
             VerifyHotkeyNode(Xml, "ExportSave");
             VerifyHotkeyNode(Xml, "ToggleReadOnly");
@@ -320,6 +328,16 @@ namespace SaveOrganizer
             VerifyHotkeyNode(Xml, "Quickload");
             VerifyHotkeyNode(Xml, "Warp");
 
+        }
+
+        private void VerifyCommitNode(XDocument Xml)
+        {
+            XElement Config = Xml.Element("Configs").Element("LastCommitID");
+            if (Config == null)
+            {
+                Xml.Descendants("Configs").FirstOrDefault().Add(new XElement("LastCommitID", "none"));
+            }
+            Xml.Save(ConfigurationFile);
         }
 
         private void VerifyGame(XDocument Xml, string GameName)
@@ -380,6 +398,9 @@ namespace SaveOrganizer
             {
                 TopMost = false;
             }
+
+            XmlNode CommitID = Xml.SelectSingleNode("//LastCommitID");
+            CurrentCommitID = CommitID.InnerText;
 
             XmlNode LastGameNode = Xml.SelectSingleNode("//LastOpened//Game");
             LastGame = LastGameNode.InnerText;
@@ -1334,6 +1355,119 @@ namespace SaveOrganizer
         {
             UndoExport();
             undoExportToolStripMenuItem.Enabled = false;
+        }
+
+        public bool CheckForUpdate()
+        {
+            Browser.Navigate("https://github.com/Villhellm/SaveOrganizer/tree/master/bin/Debug");
+            while(Browser.Document == null)
+            {
+                Application.DoEvents();
+            }
+            HtmlDocument Doc = Browser.Document;
+            HtmlElement Commits = null;
+            foreach (HtmlElement en in Doc.All)
+            {
+                if (en.GetAttribute("className") == "commit-tease-sha")
+                {
+                    Commits = en;
+                }
+            }
+
+            try
+            {
+                LatestCommitID = Commits.InnerText;
+
+                if (LatestCommitID != CurrentCommitID)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public void UpdateProgram()
+        {
+            
+            if (CheckForUpdate())
+            {               
+                FormToastResponse UpdateAsk = new FormToastResponse("There is an update available. Would you like to update?");
+                UpdateAsk.StartPosition = FormStartPosition.CenterScreen;
+                UpdateAsk.ShowDialog();
+                if (UpdateAsk.DialogResult == DialogResult.OK)
+                {
+                    UpdateCommitID();
+                    DownloadInternetFile("https://github.com/Villhellm/SaveOrganizer/raw/master/bin/Debug/SaveOrganizer.exe", System.Reflection.Assembly.GetEntryAssembly().Location + "t");
+                    SelfDestruct();
+                }
+            }
+        }
+
+        private void UpdateCommitID()
+        {
+            XmlDocument Xml = new XmlDocument();
+            Xml.Load(ConfigurationFile);
+
+            XmlNode CommitID = Xml.SelectSingleNode("//LastCommitID");
+            CommitID.InnerText = LatestCommitID;
+
+            Xml.Save(ConfigurationFile);
+        }
+
+        public void DownloadInternetFile(string sourceURL, string destinationPath)
+        {           
+            long fileSize = 0;
+            int bufferSize = 1024;
+            bufferSize *= 1000;
+            long existLen = 0;
+
+            FileStream saveFileStream;
+
+            if (File.Exists(destinationPath))
+            {
+                File.Delete(destinationPath);
+            }
+
+            saveFileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+
+            HttpWebRequest httpReq;
+            HttpWebResponse httpRes;
+            httpReq = (HttpWebRequest)HttpWebRequest.Create(sourceURL);
+            httpReq.AddRange((int)existLen);
+            Stream resStream;
+            httpRes = (HttpWebResponse)httpReq.GetResponse();
+            resStream = httpRes.GetResponseStream();
+
+            fileSize = httpRes.ContentLength;
+
+            int byteSize;
+            byte[] downBuffer = new byte[bufferSize];
+
+            while ((byteSize = resStream.Read(downBuffer, 0, downBuffer.Length)) > 0)
+            {
+                saveFileStream.Write(downBuffer, 0, byteSize);
+            }
+        }
+
+        private void SelfDestruct()
+        {
+            if(File.Exists(Application.ExecutablePath + "t"))
+            {
+                string ProgName = Path.GetFileName(Application.ExecutablePath);
+                string ProgPath = Application.ExecutablePath;
+                Process.Start("cmd.exe", "/C timeout 1 & Del \"" + ProgPath + "\"& RENAME \"" + ProgPath + "t\" " + ProgName + " & \"" + ProgPath + "\"");
+                Application.Exit();
+            }
+        }
+
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+            UpdateProgram();
         }
     }
 }

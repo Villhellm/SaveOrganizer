@@ -14,7 +14,6 @@ namespace SaveOrganizer
     public partial class FormToastResponse : Form
     {
         double Count = 0;
-        int EventCounter = 0;
         ActionCenter Actions = new ActionCenter();
 
         public FormToastResponse(string Toast)

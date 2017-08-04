@@ -73,6 +73,7 @@
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.TxtFileSearch = new System.Windows.Forms.TextBox();
+            this.Browser = new System.Windows.Forms.WebBrowser();
             this.CSMGameEdit.SuspendLayout();
             this.CMSProfileEdit.SuspendLayout();
             this.TSMain.SuspendLayout();
@@ -418,6 +419,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(494, 426);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
@@ -493,17 +495,28 @@
             this.TxtFileSearch.Enter += new System.EventHandler(this.TxtFileSearch_Enter);
             this.TxtFileSearch.Leave += new System.EventHandler(this.TxtFileSearch_Leave);
             // 
+            // Browser
+            // 
+            this.Browser.Location = new System.Drawing.Point(471, 5);
+            this.Browser.MinimumSize = new System.Drawing.Size(20, 20);
+            this.Browser.Name = "Browser";
+            this.Browser.Size = new System.Drawing.Size(20, 20);
+            this.Browser.TabIndex = 13;
+            this.Browser.Visible = false;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(494, 451);
+            this.Controls.Add(this.Browser);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.TSMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
             this.Text = "Save Organizer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
+            this.Load += new System.EventHandler(this.FormMain_Load);
             this.Shown += new System.EventHandler(this.FormMain_Shown);
             this.CSMGameEdit.ResumeLayout(false);
             this.CMSProfileEdit.ResumeLayout(false);
@@ -560,6 +573,7 @@
         private System.Windows.Forms.ToolStripMenuItem deleteGameToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem undoFileDeleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem undoExportToolStripMenuItem;
+        private System.Windows.Forms.WebBrowser Browser;
     }
 }
 
