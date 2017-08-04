@@ -1460,7 +1460,7 @@ namespace SaveOrganizer
             {
                 string ProgName = Path.GetFileName(Application.ExecutablePath);
                 string ProgPath = Application.ExecutablePath;
-                Process.Start("cmd.exe", "/C timeout 1 & Del \"" + ProgPath + "\"& RENAME \"" + ProgPath + "t\" " + ProgName + " & \"" + ProgPath + "\"");
+                Process.Start("cmd.exe", "/C timeout 1 & Del \"" + ProgPath + "\"& RENAME \"" + ProgPath + "t\" " + ProgName + " & \"" + ProgPath + "\" & exit");
                 Application.Exit();
             }
         }
