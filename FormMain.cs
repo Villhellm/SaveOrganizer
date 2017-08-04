@@ -34,6 +34,7 @@ namespace SaveOrganizer
         string TempDel = "";
         string LatestCommitID = "";
         string CurrentCommitID = "";
+        string FuckYou;
 
         Point StartPoint()
         {
