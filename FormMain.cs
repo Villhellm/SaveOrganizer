@@ -1359,20 +1359,21 @@ namespace SaveOrganizer
 
         public bool CheckForUpdate()
         {
-            Browser.Navigate("https://github.com/Villhellm/SaveOrganizer/tree/master/bin/Debug");
-            while(Browser.Document == null)
+            Browser.Navigate("https://github.com/Villhellm/SaveOrganizer/blob/master/bin/Debug/SaveOrganizer.exe");
+            while (Browser.ReadyState != WebBrowserReadyState.Complete)
             {
                 Application.DoEvents();
             }
             HtmlDocument Doc = Browser.Document;
             HtmlElement Commits = null;
-            foreach (HtmlElement en in Doc.All)
-            {
-                if (en.GetAttribute("className") == "commit-tease-sha")
+
+                foreach (HtmlElement en in Doc.All)
                 {
-                    Commits = en;
+                    if (en.GetAttribute("className") == "commit-tease-sha")
+                    {
+                        Commits = en;
+                    }
                 }
-            }
 
             try
             {
