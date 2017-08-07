@@ -34,7 +34,6 @@ namespace SaveOrganizer
         string TempDel = "";
         string LatestCommitID = "";
         string CurrentCommitID = "";
-        string FuckYou;
 
         Point StartPoint()
         {
@@ -1360,26 +1359,26 @@ namespace SaveOrganizer
 
         public bool CheckForUpdate()
         {
-            Browser.Navigate("https://github.com/Villhellm/SaveOrganizer/blob/master/bin/Debug/SaveOrganizer.exe");
-            while (Browser.ReadyState != WebBrowserReadyState.Complete)
-            {
-                Application.DoEvents();
-            }
-            HtmlDocument Doc = Browser.Document;
-            HtmlElement Commits = null;
-
-                foreach (HtmlElement en in Doc.All)
-                {
-                    if (en.GetAttribute("className") == "commit-tease-sha")
-                    {
-                        Commits = en;
-                    }
-                }
-
+            WebClient test = new WebClient();
             try
             {
-                LatestCommitID = Commits.InnerText;
+                string Data = test.DownloadString("https://github.com/Villhellm/SaveOrganizer/tree/master/bin/Debug");
 
+                Data = Data.Substring(Data.IndexOf("commit-tease-sha"));
+                Data = Data.Substring(Data.IndexOf(">"));
+                int Count = 0;
+                foreach(char L in Data)
+                {
+                    if(L == '<')
+                    {
+                        break;
+                    }
+                    Count++;
+                }
+                Data = Data.Substring(1,Count-1);
+                Data = Data.Replace(" ", "");
+                Data = Data.Replace("\n", "");
+                LatestCommitID = Data;
                 if (LatestCommitID != CurrentCommitID)
                 {
                     return true;
@@ -1387,15 +1386,15 @@ namespace SaveOrganizer
 
                 return false;
             }
-            catch
+            catch (WebException)
             {
+                ActionCenter.Toast("No internet connection", StartPoint());
                 return false;
             }
         }
 
         public void UpdateProgram()
         {
-            
             if (CheckForUpdate())
             {               
                 FormToastResponse UpdateAsk = new FormToastResponse("There is an update available. Would you like to update?");
@@ -1469,7 +1468,15 @@ namespace SaveOrganizer
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            BackgroundWorker UpdateChecker = new BackgroundWorker();
+            UpdateChecker.DoWork += UpdateChecker_DoWork;
+            UpdateChecker.RunWorkerAsync();
+        }
+
+        private void UpdateChecker_DoWork(object sender, DoWorkEventArgs e)
+        {
             UpdateProgram();
+            //throw new NotImplementedException();
         }
     }
 }
