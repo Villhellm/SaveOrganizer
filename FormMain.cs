@@ -1362,7 +1362,7 @@ namespace SaveOrganizer
             WebClient test = new WebClient();
             try
             {
-                string Data = test.DownloadString("https://github.com/Villhellm/SaveOrganizer/tree/master/bin/Debug");
+                string Data = test.DownloadString("https://github.com/Villhellm/SaveOrganizer/blob/master/bin/Debug/SaveOrganizer.exe");
 
                 Data = Data.Substring(Data.IndexOf("commit-tease-sha"));
                 Data = Data.Substring(Data.IndexOf(">"));
