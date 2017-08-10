@@ -23,6 +23,7 @@ namespace SaveOrganizer
         public static string ConfigurationFile = AppDataRoamingPath + @"\Config.xml";
         KeyHooker Hooker;
         GameHooker dsHooker;
+        GithubUpdater Updater;
         List<Hotkeys> LoadedHotkeys = new List<Hotkeys>();
         private static ListSortDirection SaveSortOrder;
         private static DataGridViewColumn SaveSortColumn;
@@ -62,6 +63,9 @@ namespace SaveOrganizer
             Hooker.Initialize();
             Hooker.PropertyChanged += new PropertyChangedEventHandler(KeyPressed);
             dsHooker = new GameHooker();
+            Updater = new GithubUpdater();
+            Updater.CurrentVersion = CurrentCommitID;
+            Updater.LaunchUpdater();
         }
 
         public static bool IsAdministrator()
@@ -1355,128 +1359,6 @@ namespace SaveOrganizer
         {
             UndoExport();
             undoExportToolStripMenuItem.Enabled = false;
-        }
-
-        public bool CheckForUpdate()
-        {
-            WebClient test = new WebClient();
-            try
-            {
-                string Data = test.DownloadString("https://github.com/Villhellm/SaveOrganizer/blob/master/bin/Debug/SaveOrganizer.exe");
-
-                Data = Data.Substring(Data.IndexOf("commit-tease-sha"));
-                Data = Data.Substring(Data.IndexOf(">"));
-                int Count = 0;
-                foreach(char L in Data)
-                {
-                    if(L == '<')
-                    {
-                        break;
-                    }
-                    Count++;
-                }
-                Data = Data.Substring(1,Count-1);
-                Data = Data.Replace(" ", "");
-                Data = Data.Replace("\n", "");
-                LatestCommitID = Data;
-                if (LatestCommitID != CurrentCommitID)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-            catch (WebException)
-            {
-                ActionCenter.Toast("No internet connection", StartPoint());
-                return false;
-            }
-        }
-
-        public void UpdateProgram()
-        {
-            if (CheckForUpdate())
-            {               
-                FormToastResponse UpdateAsk = new FormToastResponse("There is an update available. Would you like to update?");
-                UpdateAsk.StartPosition = FormStartPosition.CenterScreen;
-                UpdateAsk.ShowDialog();
-                if (UpdateAsk.DialogResult == DialogResult.OK)
-                {
-                    UpdateCommitID();
-                    DownloadInternetFile("https://github.com/Villhellm/SaveOrganizer/raw/master/bin/Debug/SaveOrganizer.exe", System.Reflection.Assembly.GetEntryAssembly().Location + "t");
-                    SelfDestruct();
-                }
-            }
-        }
-
-        private void UpdateCommitID()
-        {
-            XmlDocument Xml = new XmlDocument();
-            Xml.Load(ConfigurationFile);
-
-            XmlNode CommitID = Xml.SelectSingleNode("//LastCommitID");
-            CommitID.InnerText = LatestCommitID;
-
-            Xml.Save(ConfigurationFile);
-        }
-
-        public void DownloadInternetFile(string sourceURL, string destinationPath)
-        {           
-            long fileSize = 0;
-            int bufferSize = 1024;
-            bufferSize *= 1000;
-            long existLen = 0;
-
-            FileStream saveFileStream;
-
-            if (File.Exists(destinationPath))
-            {
-                File.Delete(destinationPath);
-            }
-
-            saveFileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-
-            HttpWebRequest httpReq;
-            HttpWebResponse httpRes;
-            httpReq = (HttpWebRequest)HttpWebRequest.Create(sourceURL);
-            httpReq.AddRange((int)existLen);
-            Stream resStream;
-            httpRes = (HttpWebResponse)httpReq.GetResponse();
-            resStream = httpRes.GetResponseStream();
-
-            fileSize = httpRes.ContentLength;
-
-            int byteSize;
-            byte[] downBuffer = new byte[bufferSize];
-
-            while ((byteSize = resStream.Read(downBuffer, 0, downBuffer.Length)) > 0)
-            {
-                saveFileStream.Write(downBuffer, 0, byteSize);
-            }
-        }
-
-        private void SelfDestruct()
-        {
-            if(File.Exists(Application.ExecutablePath + "t"))
-            {
-                string ProgName = Path.GetFileName(Application.ExecutablePath);
-                string ProgPath = Application.ExecutablePath;
-                Process.Start("cmd.exe", "/C timeout 1 & Del \"" + ProgPath + "\"& RENAME \"" + ProgPath + "t\" " + ProgName + " & \"" + ProgPath + "\" & exit");
-                Application.Exit();
-            }
-        }
-
-        private void FormMain_Load(object sender, EventArgs e)
-        {
-            BackgroundWorker UpdateChecker = new BackgroundWorker();
-            UpdateChecker.DoWork += UpdateChecker_DoWork;
-            UpdateChecker.RunWorkerAsync();
-        }
-
-        private void UpdateChecker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            UpdateProgram();
-            //throw new NotImplementedException();
         }
     }
 }

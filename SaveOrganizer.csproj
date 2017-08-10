@@ -105,6 +105,7 @@
       <DependentUpon>FormToastResponse.cs</DependentUpon>
     </Compile>
     <Compile Include="GameHooker.cs" />
+    <Compile Include="GithubUpdater.cs" />
     <Compile Include="Hotkeys.cs" />
     <Compile Include="KeyHooker.cs" />
     <Compile Include="Program.cs" />
@@ -164,6 +165,19 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="TextTemplate.ico" />
+    <Content Include="Version.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublishFile Include="Version.txt">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -516,7 +516,6 @@
             this.Name = "FormMain";
             this.Text = "Save Organizer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
-            this.Load += new System.EventHandler(this.FormMain_Load);
             this.Shown += new System.EventHandler(this.FormMain_Shown);
             this.CSMGameEdit.ResumeLayout(false);
             this.CMSProfileEdit.ResumeLayout(false);
