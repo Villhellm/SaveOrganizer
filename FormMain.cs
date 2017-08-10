@@ -33,8 +33,15 @@ namespace SaveOrganizer
         string LastGame = "";
         string LastProfile = "";
         string TempDel = "";
-        string LatestCommitID = "";
-        string CurrentCommitID = "";
+
+        public static string CurrentCommitID()
+        {
+            XmlDocument Xml = new XmlDocument();
+            Xml.Load(ConfigurationFile);
+
+            XmlNode CommitID = Xml.SelectSingleNode("//LastCommitID");
+            return CommitID.InnerText;
+        }
 
         Point StartPoint()
         {
@@ -64,7 +71,7 @@ namespace SaveOrganizer
             Hooker.PropertyChanged += new PropertyChangedEventHandler(KeyPressed);
             dsHooker = new GameHooker();
             Updater = new GithubUpdater();
-            Updater.CurrentVersion = CurrentCommitID;
+            Updater.CurrentVersion = CurrentCommitID();
             Updater.LaunchUpdater();
         }
 
@@ -402,9 +409,6 @@ namespace SaveOrganizer
             {
                 TopMost = false;
             }
-
-            XmlNode CommitID = Xml.SelectSingleNode("//LastCommitID");
-            CurrentCommitID = CommitID.InnerText;
 
             XmlNode LastGameNode = Xml.SelectSingleNode("//LastOpened//Game");
             LastGame = LastGameNode.InnerText;

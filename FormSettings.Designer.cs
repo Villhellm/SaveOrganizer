@@ -44,6 +44,8 @@
             this.CBQuickload = new System.Windows.Forms.CheckBox();
             this.TxtWarp = new System.Windows.Forms.Label();
             this.CBWarp = new System.Windows.Forms.CheckBox();
+            this.LblVersion = new System.Windows.Forms.Label();
+            this.BtnManualUpdateCheck = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // CBToggleGlobalHotkeys
@@ -225,11 +227,32 @@
             this.CBWarp.Text = "Warp to Last Spawn";
             this.CBWarp.UseVisualStyleBackColor = true;
             // 
+            // LblVersion
+            // 
+            this.LblVersion.AutoSize = true;
+            this.LblVersion.Location = new System.Drawing.Point(12, 9);
+            this.LblVersion.Name = "LblVersion";
+            this.LblVersion.Size = new System.Drawing.Size(42, 13);
+            this.LblVersion.TabIndex = 20;
+            this.LblVersion.Text = "Version";
+            // 
+            // BtnManualUpdateCheck
+            // 
+            this.BtnManualUpdateCheck.Location = new System.Drawing.Point(153, 4);
+            this.BtnManualUpdateCheck.Name = "BtnManualUpdateCheck";
+            this.BtnManualUpdateCheck.Size = new System.Drawing.Size(116, 23);
+            this.BtnManualUpdateCheck.TabIndex = 21;
+            this.BtnManualUpdateCheck.Text = "Check for updates";
+            this.BtnManualUpdateCheck.UseVisualStyleBackColor = true;
+            this.BtnManualUpdateCheck.Click += new System.EventHandler(this.BtnManualUpdateCheck_Click);
+            // 
             // FormSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(401, 358);
+            this.Controls.Add(this.BtnManualUpdateCheck);
+            this.Controls.Add(this.LblVersion);
             this.Controls.Add(this.TxtWarp);
             this.Controls.Add(this.CBWarp);
             this.Controls.Add(this.TxtQuickLoadHotkey);
@@ -273,5 +296,7 @@
         private System.Windows.Forms.CheckBox CBQuickload;
         private System.Windows.Forms.Label TxtWarp;
         private System.Windows.Forms.CheckBox CBWarp;
+        private System.Windows.Forms.Label LblVersion;
+        private System.Windows.Forms.Button BtnManualUpdateCheck;
     }
 }

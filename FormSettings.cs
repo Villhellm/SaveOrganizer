@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Windows.Forms;
 using System.ComponentModel;
+using System.Drawing;
 
 namespace SaveOrganizer
 {
@@ -10,6 +11,7 @@ namespace SaveOrganizer
     {
         KeyHooker Hooker;
         Label FocusedLabel;
+        GithubUpdater Updater;
 
         public FormSettings()
         {
@@ -18,6 +20,8 @@ namespace SaveOrganizer
             Hooker = new KeyHooker();
             Hooker.Initialize();
             Hooker.PropertyChanged += new PropertyChangedEventHandler(KeyPressed);
+            LblVersion.Text = "Version " + FormMain.CurrentCommitID();
+            Updater = new GithubUpdater();
         }
 
         private void KeyPressed(object sender, PropertyChangedEventArgs e)
@@ -255,5 +259,20 @@ namespace SaveOrganizer
             MessageBox.Show("yes focus");
         }
 
+        private void BtnManualUpdateCheck_Click(object sender, EventArgs e)
+        {
+            Updater.CurrentVersion = FormMain.CurrentCommitID();
+            Updater.LaunchUpdater();
+            if(FormMain.CurrentCommitID() == Updater.GetLatestVersion())
+            {
+                ActionCenter.Toast("No update available", StartPoint());
+            }
+        }
+
+        Point StartPoint()
+        {
+            Point Inter = new Point(this.Location.X + Width / 2 - 186, Location.Y + Height - 170);
+            return Inter;
+        }
     }
 }
