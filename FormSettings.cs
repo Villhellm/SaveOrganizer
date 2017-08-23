@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.Drawing;
@@ -12,15 +11,16 @@ namespace SaveOrganizer
         KeyHooker Hooker;
         Label FocusedLabel;
         GithubUpdater Updater;
-
+        Configuration CurrentConfig = new Configuration(); 
         public FormSettings()
         {
             InitializeComponent();
+            CurrentConfig.Load();
             ReadGlobalConifurations();
             Hooker = new KeyHooker();
             Hooker.Initialize();
             Hooker.PropertyChanged += new PropertyChangedEventHandler(KeyPressed);
-            LblVersion.Text = "Version " + FormMain.CurrentCommitID();
+            LblVersion.Text = "Version " + CurrentConfig.LastCommitID;
             Updater = new GithubUpdater();
         }
 
@@ -45,98 +45,84 @@ namespace SaveOrganizer
 
         private void ReadGlobalConifurations()
         {
-            XmlDocument Xml = new XmlDocument();
-            Xml.Load(FormMain.ConfigurationFile);
 
-            XmlNode AlwaysTopNode = Xml.SelectSingleNode("//AlwaysOnTop//Enabled");
-            CBAlwaysOnTop.Checked= Convert.ToBoolean(AlwaysTopNode.InnerText);
-            if (CBAlwaysOnTop.Checked)
+            TopMost = CurrentConfig.AlwaysOnTop;
+
+            CBAlwaysOnTop.Checked = CurrentConfig.AlwaysOnTop;
+            CBToggleGlobalHotkeys.Checked = CurrentConfig.EnableHotkeys;
+
+            foreach (Hotkey xHotkey in CurrentConfig.Hotkeys)
             {
-                TopMost = true;
-            }
-            else
-            {
-                TopMost = false;
-            }
-       
-
-            XmlNode GlobalHotkeysNode = Xml.SelectSingleNode("//EnableHotkeys//Enabled");
-            CBToggleGlobalHotkeys.Checked = Convert.ToBoolean(GlobalHotkeysNode.InnerText);
-
-            XmlNodeList HotKeyNodes = Xml.SelectNodes("//Hotkeys//Hotkey");
-
-            foreach (XmlNode Node in HotKeyNodes)
-            {
-                if (Node["Name"].InnerText == "ImportSave")
+                if (xHotkey.Name == "ImportSave")
                 {
-                    CBImportCurrentSave.Checked = Convert.ToBoolean(Node["Enabled"].InnerText);
-                    if(Node["Modifier"].InnerText != "None")
+                    CBImportCurrentSave.Checked = xHotkey.Enabled;
+                    if(xHotkey.Modifier != "None")
                     {
-                        TxtImportSaveHotkey.Text = Node["Modifier"].InnerText + " + " + Node["KeyCode"].InnerText;
+                        TxtImportSaveHotkey.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
                     }
                     else
                     {
-                        TxtImportSaveHotkey.Text = Node["KeyCode"].InnerText;
+                        TxtImportSaveHotkey.Text = xHotkey.KeyCode;
                     }
                 }
-                if (Node["Name"].InnerText == "ExportSave")
+                if (xHotkey.Name == "ExportSave")
                 {
-                    CBExportSelectedSave.Checked = Convert.ToBoolean(Node["Enabled"].InnerText);
-                    if (Node["Modifier"].InnerText != "None")
+                    CBExportSelectedSave.Checked = xHotkey.Enabled;
+                    if (xHotkey.Modifier != "None")
                     {
-                        TxtExportSaveHotkey.Text = Node["Modifier"].InnerText + " + " + Node["KeyCode"].InnerText;
+                        TxtExportSaveHotkey.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
                     }
                     else
                     {
-                        TxtExportSaveHotkey.Text = Node["KeyCode"].InnerText;
+                        TxtExportSaveHotkey.Text = xHotkey.KeyCode;
                     }
                 }
-                if (Node["Name"].InnerText == "ToggleReadOnly")
+                if (xHotkey.Name == "ToggleReadOnly")
                 {
-                    CBToggleReadOnly.Checked = Convert.ToBoolean(Node["Enabled"].InnerText);
-                    if (Node["Modifier"].InnerText != "None")
+                    CBToggleReadOnly.Checked = xHotkey.Enabled;
+                    if (xHotkey.Modifier != "None")
                     {
-                        TxtToggleReadOnlyHotkey.Text = Node["Modifier"].InnerText + " + " + Node["KeyCode"].InnerText;
+                        TxtToggleReadOnlyHotkey.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
                     }
                     else
                     {
-                        TxtToggleReadOnlyHotkey.Text = Node["KeyCode"].InnerText;
+                        TxtToggleReadOnlyHotkey.Text = xHotkey.KeyCode;
                     }
                 }
-                if (Node["Name"].InnerText == "Quicksave")
+                if (xHotkey.Name == "Quicksave")
                 {
-                    CBQuicksave.Checked = Convert.ToBoolean(Node["Enabled"].InnerText);
-                    if (Node["Modifier"].InnerText != "None")
+                    CBQuicksave.Checked = xHotkey.Enabled;
+                    if (xHotkey.Modifier != "None")
                     {
-                        TxtQuickSaveHotkey.Text = Node["Modifier"].InnerText + " + " + Node["KeyCode"].InnerText;
+                        TxtQuickSaveHotkey.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
                     }
                     else
                     {
-                        TxtQuickSaveHotkey.Text = Node["KeyCode"].InnerText;
+                        TxtQuickSaveHotkey.Text = xHotkey.KeyCode;
                     }
                 }
-                if (Node["Name"].InnerText == "Quickload")
+                if (xHotkey.Name == "Quickload")
                 {
-                    CBQuickload.Checked = Convert.ToBoolean(Node["Enabled"].InnerText);
-                    if (Node["Modifier"].InnerText != "None")
+                    CBQuickload.Checked = xHotkey.Enabled;
+                    if (xHotkey.Modifier != "None")
                     {
-                        TxtQuickLoadHotkey.Text = Node["Modifier"].InnerText + " + " + Node["KeyCode"].InnerText;
+                        TxtQuickLoadHotkey.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
                     }
                     else
                     {
-                        TxtQuickLoadHotkey.Text = Node["KeyCode"].InnerText;
+                        TxtQuickLoadHotkey.Text = xHotkey.KeyCode;
                     }
                 }
-                if (Node["Name"].InnerText == "Warp")
+                if (xHotkey.Name == "Warp")
                 {
-                    CBWarp.Checked = Convert.ToBoolean(Node["Enabled"].InnerText);
-                    if (Node["Modifier"].InnerText != "None")
+                    CBWarp.Checked = xHotkey.Enabled;
+                    if (xHotkey.Modifier != "None")
                     {
-                        TxtWarp.Text = Node["Modifier"].InnerText + " + " + Node["KeyCode"].InnerText;
+                        TxtWarp.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
                     }
                     else
                     {
-                        TxtWarp.Text = Node["KeyCode"].InnerText;
+                        TxtWarp.Text = xHotkey.KeyCode;
                     }
                 }
             }
@@ -168,46 +154,25 @@ namespace SaveOrganizer
                 }
             }
 
-            XmlDocument Xml = new XmlDocument();
-            Xml.Load(FormMain.ConfigurationFile);
+            CurrentConfig.AlwaysOnTop = CBAlwaysOnTop.Checked;
 
-            XmlNode AlwaysTopNode = Xml.SelectSingleNode("//AlwaysOnTop//Enabled");
-            AlwaysTopNode.InnerText = CBAlwaysOnTop.Checked.ToString();
+            CurrentConfig.EnableHotkeys = CBToggleGlobalHotkeys.Checked;
 
-            XmlNode GlobalHotkeysNode = Xml.SelectSingleNode("//EnableHotkeys//Enabled");
-            GlobalHotkeysNode.InnerText = CBToggleGlobalHotkeys.Checked.ToString();
+            CurrentConfig.Hotkeys.Clear();
 
-            XmlNodeList HotKeyNodes = Xml.SelectNodes("//Hotkeys//Hotkey");
+            AddHotkey("ImportSave", CBImportCurrentSave, TxtImportSaveHotkey);
 
-            foreach (XmlNode Node in HotKeyNodes)
-            {
-                if (Node["Name"].InnerText == "ImportSave")
-                {
-                    SaveHotkey(Node, CBImportCurrentSave, TxtImportSaveHotkey);
-                }
-                if (Node["Name"].InnerText == "ExportSave")
-                {
-                    SaveHotkey(Node, CBExportSelectedSave, TxtExportSaveHotkey);
-                }
-                if (Node["Name"].InnerText == "ToggleReadOnly")
-                {
-                    SaveHotkey(Node, CBToggleReadOnly, TxtToggleReadOnlyHotkey);
-                }
-                if (Node["Name"].InnerText == "Quicksave")
-                {
-                    SaveHotkey(Node, CBQuicksave, TxtQuickSaveHotkey);
-                }
-                if (Node["Name"].InnerText == "Quickload")
-                {
-                    SaveHotkey(Node, CBQuickload, TxtQuickLoadHotkey);
-                }
-                if (Node["Name"].InnerText == "Warp")
-                {
-                    SaveHotkey(Node, CBWarp, TxtWarp);
-                }
-            }
+            AddHotkey("ExportSave", CBExportSelectedSave, TxtExportSaveHotkey);
 
-            Xml.Save(FormMain.ConfigurationFile);
+            AddHotkey("ToggleReadOnly", CBToggleReadOnly, TxtToggleReadOnlyHotkey);
+
+            AddHotkey("Quicksave", CBQuicksave, TxtQuickSaveHotkey);
+
+            AddHotkey("Quickload", CBQuickload, TxtQuickLoadHotkey);
+
+            AddHotkey("Warp", CBWarp, TxtWarp);
+
+            CurrentConfig.Save();
             Close();
         }
 
@@ -216,19 +181,18 @@ namespace SaveOrganizer
             Close();
         }
 
-        private void SaveHotkey(XmlNode Node, CheckBox Enabler, Label Keys)
+        private void AddHotkey(string Name, CheckBox Enabler, Label Keys)
         {
-            Node["Enabled"].InnerText = Enabler.Checked.ToString();
+            Hotkey AddHotkey;
             if (Keys.Text.Contains(" + "))
             {
-                Node["Modifier"].InnerText = Keys.Text.Substring(0, Keys.Text.IndexOf(" + "));
-                Node["KeyCode"].InnerText = Keys.Text.Substring(Keys.Text.IndexOf(" + ")).Replace(" + ", "");
+                AddHotkey = new Hotkey(Name, Keys.Text.Substring(0, Keys.Text.IndexOf(" + ")), Keys.Text.Substring(Keys.Text.IndexOf(" + ")).Replace(" + ", ""), Enabler.Checked);
             }
             else
             {
-                Node["Modifier"].InnerText = "None";
-                Node["KeyCode"].InnerText = Keys.Text;
+                AddHotkey = new Hotkey(Name, Keys.Text, Enabler.Checked);
             }
+            CurrentConfig.Hotkeys.Add(AddHotkey);
         }
 
         private void FormSettings_FormClosing(object sender, FormClosingEventArgs e)
@@ -261,9 +225,9 @@ namespace SaveOrganizer
 
         private void BtnManualUpdateCheck_Click(object sender, EventArgs e)
         {
-            Updater.CurrentVersion = FormMain.CurrentCommitID();
+            Updater.CurrentVersion = CurrentConfig.LastCommitID;
             Updater.LaunchUpdater();
-            if(FormMain.CurrentCommitID() == Updater.GetLatestVersion())
+            if(CurrentConfig.LastCommitID == Updater.GetLatestVersion())
             {
                 ActionCenter.Toast("No update available", StartPoint());
             }

@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionCenter.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="FormHelp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,10 +105,12 @@
     <Compile Include="FormToastResponse.Designer.cs">
       <DependentUpon>FormToastResponse.cs</DependentUpon>
     </Compile>
+    <Compile Include="Game.cs" />
     <Compile Include="GameHooker.cs" />
     <Compile Include="GithubUpdater.cs" />
-    <Compile Include="Hotkeys.cs" />
+    <Compile Include="Hotkey.cs" />
     <Compile Include="KeyHooker.cs" />
+    <Compile Include="LastOpened.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormHelp.resx">

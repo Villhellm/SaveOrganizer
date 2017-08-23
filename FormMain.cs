@@ -9,7 +9,6 @@ using System.Data;
 using System.ComponentModel;
 using System.Security.Principal;
 using System.Drawing;
-using System.Xml.Linq;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -24,24 +23,12 @@ namespace SaveOrganizer
         KeyHooker Hooker;
         GameHooker dsHooker;
         GithubUpdater Updater;
-        List<Hotkeys> LoadedHotkeys = new List<Hotkeys>();
         private static ListSortDirection SaveSortOrder;
         private static DataGridViewColumn SaveSortColumn;
         private string PreviousFileName = "";
         private bool PreviousReadOnly;
-        private bool EnableGlobalHotkeys = false;
-        string LastGame = "";
-        string LastProfile = "";
         string TempDel = "";
-
-        public static string CurrentCommitID()
-        {
-            XmlDocument Xml = new XmlDocument();
-            Xml.Load(ConfigurationFile);
-
-            XmlNode CommitID = Xml.SelectSingleNode("//LastCommitID");
-            return CommitID.InnerText;
-        }
+        Configuration CurrentConfig = new Configuration();
 
         Point StartPoint()
         {
@@ -52,26 +39,27 @@ namespace SaveOrganizer
         public FormMain()
         {
             InitializeComponent();
-            this.StartPosition = FormStartPosition.CenterScreen;
-            CreateConfigurationFile();
-            VerifyXMLConfigFile();
+            StartPosition = FormStartPosition.CenterScreen;
+            CurrentConfig.CreateConfiguration();
+            CurrentConfig.VerifyXMLConfigFile();
+            CurrentConfig.Load();
             ReadGlobalConfigurations();
-            if (LastGame == "")
+            if (CurrentConfig.LastOpen.Game == "")
             {
                 ComboBoxSelectGame.SelectedIndex = 0;
                 ComboBoxSelectSubDirectory.SelectedValue = "Default";
             }
             else
             {
-                ComboBoxSelectGame.Text = LastGame;
-                ComboBoxSelectSubDirectory.Text = LastProfile;
+                ComboBoxSelectGame.Text = CurrentConfig.LastOpen.Game;
+                ComboBoxSelectSubDirectory.Text = CurrentConfig.LastOpen.Profile;
             }
             Hooker = new KeyHooker();
             Hooker.Initialize();
             Hooker.PropertyChanged += new PropertyChangedEventHandler(KeyPressed);
             dsHooker = new GameHooker();
             Updater = new GithubUpdater();
-            Updater.CurrentVersion = CurrentCommitID();
+            Updater.CurrentVersion = CurrentConfig.LastCommitID;
             Updater.LaunchUpdater();
         }
 
@@ -82,15 +70,15 @@ namespace SaveOrganizer
 
         private void KeyPressed(object sender, PropertyChangedEventArgs e)
         {
-            if (EnableGlobalHotkeys)
+            if (CurrentConfig.EnableHotkeys)
             {
                 string Modifier = ((Keys)Hooker.Modifier).ToString();
                 string KeyCode = ((Keys)Hooker.CurrentKey).ToString();
-                foreach (Hotkeys HotK in LoadedHotkeys)
+                foreach (Hotkey HotK in CurrentConfig.Hotkeys)
                 {
-                    if (HotK.Modifier == Modifier && HotK.KeyPress == KeyCode && HotK.Enabled == true)
+                    if (HotK.Modifier == Modifier && HotK.KeyCode == KeyCode && HotK.Enabled == true)
                     {
-                        switch (HotK.HotkeyName)
+                        switch (HotK.Name)
                         {
                             case "ExportSave":
                                 ExportSave();
@@ -157,320 +145,26 @@ namespace SaveOrganizer
         private string CurrentPath()
         {
             return AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ComboBoxSelectSubDirectory.Text + "\\" + DGVSaveFiles.CurrentRow.Cells[0].Value.ToString();
-        }
-
-        private void CreateConfigurationFile()
-        {
-            if (!File.Exists(ConfigurationFile))
-            {
-                Directory.CreateDirectory(AppDataRoamingPath);
-                Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls\\Default");
-                Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls II\\Default");
-                Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls II SotFS\\Default");
-                Directory.CreateDirectory(AppDataRoamingPath + "\\Dark Souls III\\Default");
-                XmlTextWriter Writer = new XmlTextWriter(ConfigurationFile, Encoding.UTF8);
-                Writer.Formatting = Formatting.Indented;
-                Writer.WriteStartElement("Configs");
-                Writer.WriteStartElement("Games");
-                Writer.WriteStartElement("Game");
-                Writer.WriteStartElement("Name");
-                Writer.WriteString("Dark Souls");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Path");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Game");
-                Writer.WriteStartElement("Name");
-                Writer.WriteString("Dark Souls II");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Path");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Game");
-                Writer.WriteStartElement("Name");
-                Writer.WriteString("Dark Souls II SotFS");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Path");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Game");
-                Writer.WriteStartElement("Name");
-                Writer.WriteString("Dark Souls III");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Path");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-
-                Writer.WriteStartElement("EnableHotkeys");
-                Writer.WriteStartElement("Enabled");
-                Writer.WriteString("False");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-
-                Writer.WriteStartElement("AlwaysOnTop");
-                Writer.WriteStartElement("Enabled");
-                Writer.WriteString("False");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-
-                Writer.WriteStartElement("LastOpened");
-                Writer.WriteStartElement("Game");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Profile");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-
-                Writer.WriteStartElement("LastCommitID");
-                Writer.WriteString("none");
-                Writer.WriteEndElement();
-
-                Writer.WriteStartElement("Hotkeys");
-
-                Writer.WriteStartElement("Hotkey");
-                Writer.WriteStartElement("Name");
-                Writer.WriteString("ImportSave");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Modifier");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("KeyCode");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Enabled");
-                Writer.WriteString("False");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-
-                Writer.WriteStartElement("Hotkey");
-                Writer.WriteStartElement("Name");
-                Writer.WriteString("ExportSave");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Modifier");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("KeyCode");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Enabled");
-                Writer.WriteString("False");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-
-                Writer.WriteStartElement("Hotkey");
-                Writer.WriteStartElement("Name");
-                Writer.WriteString("ToggleReadOnly");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Modifier");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("KeyCode");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Enabled");
-                Writer.WriteString("False");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-
-                Writer.WriteStartElement("Hotkey");
-                Writer.WriteStartElement("Name");
-                Writer.WriteString("Quicksave");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Modifier");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("KeyCode");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Enabled");
-                Writer.WriteString("False");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-
-                Writer.WriteStartElement("Hotkey");
-                Writer.WriteStartElement("Name");
-                Writer.WriteString("Quickload");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Modifier");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("KeyCode");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Enabled");
-                Writer.WriteString("False");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-
-                Writer.WriteStartElement("Hotkey");
-                Writer.WriteStartElement("Name");
-                Writer.WriteString("Warp");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Modifier");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("KeyCode");
-                Writer.WriteString("None");
-                Writer.WriteEndElement();
-                Writer.WriteStartElement("Enabled");
-                Writer.WriteString("False");
-                Writer.WriteEndElement();
-                Writer.WriteEndElement();
-
-                Writer.WriteEndElement();
-
-                Writer.WriteEndElement();
-                Writer.Close();
-            }
-        }
-
-        private void VerifyXMLConfigFile()
-        {
-            XDocument Xml = XDocument.Load(ConfigurationFile);
-
-            VerifyLastOpened(Xml);
-            VerifyConfigSetting(Xml, "AlwaysOnTop");
-            VerifyConfigSetting(Xml, "EnableHotkeys");
-            VerifyCommitNode(Xml);
-            VerifyHotkeyNode(Xml, "ImportSave");
-            VerifyHotkeyNode(Xml, "ExportSave");
-            VerifyHotkeyNode(Xml, "ToggleReadOnly");
-            VerifyHotkeyNode(Xml, "Quicksave");
-            VerifyHotkeyNode(Xml, "Quickload");
-            VerifyHotkeyNode(Xml, "Warp");
-
-        }
-
-        private void VerifyCommitNode(XDocument Xml)
-        {
-            XElement Config = Xml.Element("Configs").Element("LastCommitID");
-            if (Config == null)
-            {
-                Xml.Descendants("Configs").FirstOrDefault().Add(new XElement("LastCommitID", "none"));
-            }
-            Xml.Save(ConfigurationFile);
-        }
-
-        private void VerifyGame(XDocument Xml, string GameName)
-        {
-            XElement Game = Xml.Element("Configs").Element("Games").Elements("Game").Where(x => x.Element("Name").Value == GameName).SingleOrDefault();
-
-            if (Game == null)
-            {
-                Xml.Descendants("Games").FirstOrDefault().Add(new XElement("Game", new XElement("Name", GameName), new XElement("Path")));
-            }
-            Xml.Save(ConfigurationFile);
-        }
-
-        private void VerifyLastOpened(XDocument Xml)
-        {
-            XElement LO = Xml.Element("Configs").Element("LastOpened");
-
-            if (LO == null)
-            {
-                Xml.Descendants("Configs").FirstOrDefault().Add(new XElement("LastOpened", new XElement("Game"), new XElement("Profile")));
-            }
-            Xml.Save(ConfigurationFile);
-        }
-
-        private void VerifyConfigSetting(XDocument Xml, string ConfigName)
-        {
-            XElement Config = Xml.Element("Configs").Element(ConfigName);
-            if(Config == null)
-            {
-                Xml.Descendants("Configs").FirstOrDefault().Add(new XElement(ConfigName, new XElement("Enabled", "False")));
-            }
-            Xml.Save(ConfigurationFile);
-        }
-
-        private void VerifyHotkeyNode(XDocument Xml, string HotkeyName)
-        {
-            XElement Hotkey = Xml.Element("Configs").Element("Hotkeys").Elements("Hotkey").Where(x => x.Element("Name").Value == HotkeyName).SingleOrDefault();
-
-            if (Hotkey == null)
-            {
-                Xml.Descendants("Hotkeys").FirstOrDefault().Add(new XElement("Hotkey", new XElement("Name", HotkeyName), new XElement("Modifier", "None"), new XElement("KeyCode", "None"), new XElement("Enabled", "False")));
-            }
-            Xml.Save(ConfigurationFile);
-        }
+        }       
 
         private void ReadGlobalConfigurations()
         {
-            LoadedHotkeys.Clear();
-            XmlDocument Xml = new XmlDocument();
-            Xml.Load(ConfigurationFile);
-
-            XmlNode AlwaysTopNode = Xml.SelectSingleNode("//AlwaysOnTop//Enabled");
-            if (Convert.ToBoolean(AlwaysTopNode.InnerText))
-            {
-                TopMost = true;
-            }
-            else
-            {
-                TopMost = false;
-            }
-
-            XmlNode LastGameNode = Xml.SelectSingleNode("//LastOpened//Game");
-            LastGame = LastGameNode.InnerText;
-            XmlNode LastProfileNode = Xml.SelectSingleNode("//LastOpened//Profile");
-            LastProfile = LastProfileNode.InnerText;
-            XmlNode GlobalHotkeysNode = Xml.SelectSingleNode("//EnableHotkeys//Enabled");
-            EnableGlobalHotkeys = Convert.ToBoolean(GlobalHotkeysNode.InnerText);
-
-            XmlNodeList GameNodes = Xml.SelectNodes("//Games//Game");
             List<string> GameList = new List<string>();
-            foreach(XmlNode Node in GameNodes)
+
+            foreach(Game xGame in CurrentConfig.Games)
             {
-                GameList.Add(Node["Name"].InnerText);
+                GameList.Add(xGame.Name);
             }
             GameList.Add("Add new...");
 
             ComboBoxSelectGame.DataSource = GameList;
-
-            XmlNodeList HotKeyNodes = Xml.SelectNodes("//Hotkeys//Hotkey");
-
-            foreach (XmlNode Node in HotKeyNodes)
-            {
-                if (Node["Name"].InnerText == "ImportSave")
-                {
-                    AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
-                }
-                if (Node["Name"].InnerText == "ExportSave")
-                {
-                    AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
-
-                }
-                if (Node["Name"].InnerText == "ToggleReadOnly")
-                {
-                    AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
-                }
-                if (Node["Name"].InnerText == "Quicksave")
-                {
-                    AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
-                }
-                if (Node["Name"].InnerText == "Quickload")
-                {
-                    AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
-                }
-                if (Node["Name"].InnerText == "Warp")
-                {
-                    AddHotkey(Node["Name"].InnerText, Node["Modifier"].InnerText, Node["KeyCode"].InnerText, Convert.ToBoolean(Node["Enabled"].InnerText));
-                }
-            }
         }
 
         private void SaveLastOpened()
         {
-            XmlDocument Xml = new XmlDocument();
-            Xml.Load(FormMain.ConfigurationFile);
-
-            XmlNode Game = Xml.SelectSingleNode("//LastOpened//Game");
-            Game.InnerText = ComboBoxSelectGame.Text;
-
-            XmlNode Profile = Xml.SelectSingleNode("//LastOpened//Profile");
-            Profile.InnerText = ComboBoxSelectSubDirectory.Text;
-
-            Xml.Save(ConfigurationFile);
+            CurrentConfig.LastOpen.Game = ComboBoxSelectGame.Text;
+            CurrentConfig.LastOpen.Profile = ComboBoxSelectSubDirectory.Text;
+            CurrentConfig.Save();
         }
 
         private void GetFileNames(bool WithFilter)
@@ -915,10 +609,11 @@ namespace SaveOrganizer
 
         private void OpenSettingsForm()
         {
-            EnableGlobalHotkeys = false;
+            CurrentConfig.EnableHotkeys = false;
             FormSettings Settings = new FormSettings();
             Settings.StartPosition = FormStartPosition.CenterParent;
             Settings.ShowDialog();
+            CurrentConfig.Load();
             ReadGlobalConfigurations();
         }
 
@@ -960,16 +655,6 @@ namespace SaveOrganizer
             }
         }
 
-        private void AddHotkey(string HotkeyName, string Modifier, string KeyPress, bool Enabled)
-        {
-            Hotkeys Hotkey = new Hotkeys();
-            Hotkey.HotkeyName = HotkeyName;
-            Hotkey.Modifier = Modifier;
-            Hotkey.KeyPress = KeyPress;
-            Hotkey.Enabled = Enabled;
-            LoadedHotkeys.Add(Hotkey);
-        }
-
         private void ComboBoxSelectGame_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ComboBoxSelectGame.Text == "Add new...")
@@ -986,7 +671,6 @@ namespace SaveOrganizer
 
         private void AddGameToList()
         {
-            XDocument Xml = XDocument.Load(ConfigurationFile);
             string GameName = "";
             FormRename NewGame = new FormRename();
             NewGame.ShowDialog();
@@ -996,8 +680,7 @@ namespace SaveOrganizer
                 if (NewGame.NewName != "")
                 {
                     GameName = NewGame.NewName;
-                    Xml.Descendants("Games").FirstOrDefault().Add(new XElement("Game", new XElement("Name", GameName), new XElement("Path")));
-                    Xml.Save(ConfigurationFile);
+                    CurrentConfig.Games.Add(new Game(GameName, ""));
                 }
 
                 Directory.CreateDirectory(AppDataRoamingPath + "//" + GameName + "//" + "Default");
@@ -1038,9 +721,8 @@ namespace SaveOrganizer
                 else
                 {
                     Directory.Delete(AppDataRoamingPath + "//" + GameName, true);
-                    XDocument Xml = XDocument.Load(ConfigurationFile);
-                    Xml.Element("Configs").Element("Games").Elements("Game").Where(x => x.Element("Name").Value == GameName).Remove();
-                    Xml.Save(ConfigurationFile);
+                    CurrentConfig.RemoveGame(GameName);
+                    CurrentConfig.Save();
                     LoadGameList();
                 }
             }
@@ -1180,15 +862,15 @@ namespace SaveOrganizer
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenSettingsForm();
-            if (LastGame == "")
+            if (CurrentConfig.LastOpen.Game == "")
             {
                 ComboBoxSelectGame.SelectedIndex = 0;
                 ComboBoxSelectSubDirectory.SelectedValue = "Default";
             }
             else
             {
-                ComboBoxSelectGame.Text = LastGame;
-                ComboBoxSelectSubDirectory.Text = LastProfile;
+                ComboBoxSelectGame.Text = CurrentConfig.LastOpen.Game;
+                ComboBoxSelectSubDirectory.Text = CurrentConfig.LastOpen.Profile;
             }
         }
 
