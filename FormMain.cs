@@ -417,6 +417,12 @@ namespace SaveOrganizer
 
         private void ImportCurrentSave()
         {
+            string Path = CurrentConfig.GetPath(ComboBoxSelectGame.Text);
+            if (Path == "")
+            {
+                SetGameSaveLocation(ComboBoxSelectGame.Text);
+                Path = CurrentConfig.GetPath(ComboBoxSelectGame.Text);
+            }
             CopyFile(CurrentConfig.GetPath(ComboBoxSelectGame.Text), CurrentSubDirectory());
             GetFileNames();
 
