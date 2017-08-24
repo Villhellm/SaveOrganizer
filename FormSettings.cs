@@ -11,11 +11,12 @@ namespace SaveOrganizer
         KeyHooker Hooker;
         Label FocusedLabel;
         GithubUpdater Updater;
-        Configuration CurrentConfig = new Configuration(); 
+        Configuration CurrentConfig;
+
         public FormSettings()
         {
             InitializeComponent();
-            CurrentConfig.Load();
+            CurrentConfig = Configuration.Load();
             ReadGlobalConifurations();
             Hooker = new KeyHooker();
             Hooker.Initialize();

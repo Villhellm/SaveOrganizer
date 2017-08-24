@@ -16,5 +16,10 @@ namespace SaveOrganizer
             this.Name = Name;
             this.Path = Path;
         }
+
+        public Game()
+        {
+
+        }
     }
 }

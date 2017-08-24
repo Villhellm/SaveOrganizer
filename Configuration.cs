@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using System.Threading.Tasks;
 using System.IO;
 using System.Xml;
 
@@ -21,36 +20,36 @@ namespace SaveOrganizer
         public static string AppDataRoamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\SaveOrganizer";
         public static string ConfigurationFile = AppDataRoamingPath + @"\Config.xml";
 
-        public void Load()
+        public static Configuration Load()
         {
             XDocument Xml = XDocument.Load(ConfigurationFile);
-
+            Configuration InitialConfig = new Configuration();
             XElement xAlwaysOnTop = Xml.Element("Configs").Element("AlwaysOnTop");
             if (Convert.ToBoolean(xAlwaysOnTop.Value))
             {
-                AlwaysOnTop = true;
+                InitialConfig.AlwaysOnTop = true;
             }
             else
             {
-                AlwaysOnTop = false;
+                InitialConfig.AlwaysOnTop = false;
             }
             XElement xLastCommitID = Xml.Element("Configs").Element("LastCommitID");
-            LastCommitID = xLastCommitID.Value;
-            LastOpen = new LastOpened(Xml.Element("Configs").Element("LastOpened").Element("Game").Value, Xml.Element("Configs").Element("LastOpened").Element("Profile").Value);
+            InitialConfig.LastCommitID = xLastCommitID.Value;
+            InitialConfig.LastOpen = new LastOpened(Xml.Element("Configs").Element("LastOpened").Element("Game").Value, Xml.Element("Configs").Element("LastOpened").Element("Profile").Value);
             XElement xEnableHotkeys = Xml.Element("Configs").Element("EnableHotkeys");
-            EnableHotkeys = Convert.ToBoolean(xEnableHotkeys.Value);
+            InitialConfig.EnableHotkeys = Convert.ToBoolean(xEnableHotkeys.Value);
 
             IEnumerable<XElement> xGames = Xml.Element("Configs").Element("Games").Elements("Game");
 
-            Games = new List<Game>();
+            InitialConfig.Games = new List<Game>();
             foreach (XElement xGame in xGames)
             {
                 Game AddGame = new Game(xGame.Element("Name").Value, xGame.Element("Path").Value);
-                Games.Add(AddGame);
+                InitialConfig.Games.Add(AddGame);
             }
 
             IEnumerable<XElement> xHotkeys = Xml.Element("Configs").Element("Hotkeys").Elements("Hotkey");
-            Hotkeys = new List<Hotkey>();
+            InitialConfig.Hotkeys = new List<Hotkey>();
             foreach (XElement xHotkey in xHotkeys)
             {
                 Hotkey AddHotkey = new Hotkey();
@@ -58,8 +57,9 @@ namespace SaveOrganizer
                 AddHotkey.Modifier = xHotkey.Element("Modifier").Value;
                 AddHotkey.KeyCode = xHotkey.Element("KeyCode").Value;
                 AddHotkey.Enabled =Convert.ToBoolean(xHotkey.Element("Enabled").Value);
-                Hotkeys.Add(AddHotkey);
-            }          
+                InitialConfig.Hotkeys.Add(AddHotkey);
+            }
+            return InitialConfig;
         }
 
         public void Save()
@@ -93,7 +93,7 @@ namespace SaveOrganizer
             Hotkeys.Add(AddHotkey);
         }
 
-        public void CreateConfiguration()
+        public static void CreateConfiguration()
         {
             if (!File.Exists(ConfigurationFile))
             {
@@ -328,6 +328,19 @@ namespace SaveOrganizer
         {
             Game RemoveThis = Games.Where(x => x.Name == GameName).FirstOrDefault();
             Games.Remove(RemoveThis);
+        }
+
+        public string GetPath(string GameName)
+        {
+            Game HasPath = Games.Where(x => x.Name == GameName).FirstOrDefault();
+            return HasPath.Path;
+        }
+
+        public Game Game(string GameName)
+        {
+            Game ReturnGame = new Game();
+            ReturnGame = Games.Where(x => x.Name == GameName).FirstOrDefault();
+            return ReturnGame;
         }
     }
 }

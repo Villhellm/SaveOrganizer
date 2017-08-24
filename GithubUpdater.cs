@@ -8,7 +8,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 namespace SaveOrganizer
 {
@@ -16,7 +15,7 @@ namespace SaveOrganizer
     {
         public static string VersionURL = "https://raw.githubusercontent.com/Villhellm/SaveOrganizer/master/Version.txt";
         public static string ExecutableDownloadURL = "https://github.com/Villhellm/SaveOrganizer/raw/master/bin/Debug/SaveOrganizer.exe";
-        private string ConfigurationFile = FormMain.ConfigurationFile;
+        private string ConfigurationFile = Configuration.ConfigurationFile;
         public string LatestVersion { get; set; }
         public string CurrentVersion { get; set; }
         string MemeURLCacheBlocker = "?t=" + DateTime.Now.ToString().Replace(" ", "");
@@ -111,10 +110,9 @@ namespace SaveOrganizer
 
         public void UpdateVersion()
         {
-            XDocument Xml = XDocument.Load(ConfigurationFile);
-            XElement xVersion = Xml.Element("Configs").Element("LastCommitID");
-            xVersion.Value = LatestVersion;
-            Xml.Save(ConfigurationFile);
+            Configuration CurrentConfig = CurrentConfig = Configuration.Load();
+            CurrentConfig.LastCommitID = LatestVersion;
+            CurrentConfig.Save();
         }
 
     }

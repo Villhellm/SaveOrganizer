@@ -2,24 +2,17 @@
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
-using System.Xml;
-using System.Text;
 using System.Collections.Generic;
 using System.Data;
 using System.ComponentModel;
 using System.Security.Principal;
 using System.Drawing;
-using System.Linq;
-using System.Net;
-using System.Threading;
 
 namespace SaveOrganizer
 {
     public partial class FormMain : Form
     {
         //Unnecessary additions to a functional program
-        public static string AppDataRoamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\SaveOrganizer";
-        public static string ConfigurationFile = AppDataRoamingPath + @"\Config.xml";
         KeyHooker Hooker;
         GameHooker dsHooker;
         GithubUpdater Updater;
@@ -28,7 +21,7 @@ namespace SaveOrganizer
         private string PreviousFileName = "";
         private bool PreviousReadOnly;
         string TempDel = "";
-        Configuration CurrentConfig = new Configuration();
+        Configuration CurrentConfig;
 
         Point StartPoint()
         {
@@ -40,9 +33,9 @@ namespace SaveOrganizer
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterScreen;
-            CurrentConfig.CreateConfiguration();
+            Configuration.CreateConfiguration();
+            CurrentConfig = Configuration.Load();
             CurrentConfig.VerifyXMLConfigFile();
-            CurrentConfig.Load();
             ReadGlobalConfigurations();
             if (CurrentConfig.LastOpen.Game == "")
             {
@@ -87,8 +80,8 @@ namespace SaveOrganizer
                                 ImportCurrentSave();
                                 break;
                             case "ToggleReadOnly":
-                                FileInfo SelectedSave = new FileInfo(GetGameSaveLocation(ComboBoxSelectGame.Text));
-                                SetReadOnly(GetGameSaveLocation(ComboBoxSelectGame.Text), !SelectedSave.IsReadOnly);
+                                FileInfo SelectedSave = new FileInfo(CurrentConfig.GetPath(ComboBoxSelectGame.Text));
+                                SetReadOnly(CurrentConfig.GetPath(ComboBoxSelectGame.Text), !SelectedSave.IsReadOnly);
                                 break;
                             case "Quicksave":
                                 if(ComboBoxSelectGame.Text == "Dark Souls")
@@ -129,12 +122,12 @@ namespace SaveOrganizer
 
         private string CurrentDirectory()
         {
-            return AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text;
+            return Configuration.AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text;
         }
 
         private string CurrentSubDirectory()
         {
-            return AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ComboBoxSelectSubDirectory.Text;
+            return Configuration.AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ComboBoxSelectSubDirectory.Text;
         }
 
         private string CurrentFile()
@@ -144,7 +137,7 @@ namespace SaveOrganizer
 
         private string CurrentPath()
         {
-            return AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ComboBoxSelectSubDirectory.Text + "\\" + DGVSaveFiles.CurrentRow.Cells[0].Value.ToString();
+            return Configuration.AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ComboBoxSelectSubDirectory.Text + "\\" + DGVSaveFiles.CurrentRow.Cells[0].Value.ToString();
         }       
 
         private void ReadGlobalConfigurations()
@@ -247,33 +240,6 @@ namespace SaveOrganizer
             ComboBoxSelectSubDirectory.Items.Add("Add new ...");
         }
 
-        private string GetGameSaveLocation(string Game)
-        {
-            XmlDocument Xml = new XmlDocument();
-            Xml.Load(ConfigurationFile);
-
-            XmlNodeList NodeList = Xml.SelectNodes("//Games//Game");
-            foreach (XmlNode Node in NodeList)
-            {
-                if (Node["Name"].InnerText == ComboBoxSelectGame.Text)
-                {
-                    if (Node["Path"].InnerText != "")
-                    {
-                        return Node["Path"].InnerText;
-                    }
-                    else
-                    {
-                        string NewSaveLocation = GetNewGameSaveLocation();
-                        Node["Path"].InnerText = NewSaveLocation;
-                        Xml.Save(ConfigurationFile);
-                        return NewSaveLocation;
-                    }
-                }
-            }
-
-            return GetNewGameSaveLocation();
-        }
-
         private string GetNewGameSaveLocation()
         {
             OpenFileDialog GetPath = new OpenFileDialog();
@@ -287,20 +253,10 @@ namespace SaveOrganizer
             return "";
         }
 
-        private void SetGameSaveLocation(string Game)
+        private void SetGameSaveLocation(string GameName)
         {
-            XmlDocument Xml = new XmlDocument();
-            Xml.Load(ConfigurationFile);
-
-            XmlNodeList NodeList = Xml.SelectNodes("//Games//Game");
-            foreach (XmlNode Node in NodeList)
-            {
-                if (Node["Name"].InnerText == ComboBoxSelectGame.Text)
-                {
-                    Node["Path"].InnerText = GetNewGameSaveLocation();
-                    Xml.Save(ConfigurationFile);
-                }
-            }
+            CurrentConfig.Game(GameName).Path = GetNewGameSaveLocation();
+            CurrentConfig.Save();
         }
 
         private void CopyFile(string ReadPath, string WritePath)
@@ -375,9 +331,9 @@ namespace SaveOrganizer
             if (DR == DialogResult.OK)
             {
                 string ProfileName = Path.GetFileName(SelectProfile.SelectedPath);
-                if(VerifyValidity(AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ProfileName, ProfileName))
+                if(VerifyValidity(Configuration.AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ProfileName, ProfileName))
                 {
-                    DirectoryCopy(SelectProfile.SelectedPath, AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ProfileName, false);
+                    DirectoryCopy(SelectProfile.SelectedPath, Configuration.AppDataRoamingPath + "\\" + ComboBoxSelectGame.Text + "\\" + ProfileName, false);
                     GetSubDirectories();
                     ComboBoxSelectSubDirectory.SelectedIndex = ComboBoxSelectSubDirectory.Items.IndexOf(ProfileName);
 
@@ -461,7 +417,7 @@ namespace SaveOrganizer
 
         private void ImportCurrentSave()
         {
-            CopyFile(GetGameSaveLocation(ComboBoxSelectGame.Text), CurrentSubDirectory());
+            CopyFile(CurrentConfig.GetPath(ComboBoxSelectGame.Text), CurrentSubDirectory());
             GetFileNames();
 
             DGVSaveFiles.ClearSelection();
@@ -483,9 +439,9 @@ namespace SaveOrganizer
         {
             try
             {
-                SetReadOnly(GetGameSaveLocation(ComboBoxSelectGame.Text), false);
-                File.Copy(GetGameSaveLocation(ComboBoxSelectGame.Text), AppDataRoamingPath + "\\" + "TempExp", true);
-                File.Copy(CurrentSubDirectory() + "\\" + DGVSaveFiles.CurrentRow.Cells[0].Value.ToString(), GetGameSaveLocation(ComboBoxSelectGame.Text), true);
+                SetReadOnly(CurrentConfig.GetPath(ComboBoxSelectGame.Text), false);
+                File.Copy(CurrentConfig.GetPath(ComboBoxSelectGame.Text), Configuration.AppDataRoamingPath + "\\" + "TempExp", true);
+                File.Copy(CurrentSubDirectory() + "\\" + DGVSaveFiles.CurrentRow.Cells[0].Value.ToString(), CurrentConfig.GetPath(ComboBoxSelectGame.Text), true);
             }
             catch (ArgumentException)
             {
@@ -501,7 +457,7 @@ namespace SaveOrganizer
         {
             try
             {
-                File.Copy(AppDataRoamingPath + "\\" + "TempExp", GetGameSaveLocation(ComboBoxSelectGame.Text), true);
+                File.Copy(Configuration.AppDataRoamingPath + "\\" + "TempExp", CurrentConfig.GetPath(ComboBoxSelectGame.Text), true);
             }
             catch (ArgumentException)
             {
@@ -517,8 +473,8 @@ namespace SaveOrganizer
         {
             try
             {
-                File.Copy(AppDataRoamingPath + "\\" + "TempDel", CurrentSubDirectory() + "\\" + TempDel, true);
-                File.Delete(AppDataRoamingPath + "\\" + "TempDel");
+                File.Copy(Configuration.AppDataRoamingPath + "\\" + "TempDel", CurrentSubDirectory() + "\\" + TempDel, true);
+                File.Delete(Configuration.AppDataRoamingPath + "\\" + "TempDel");
                 GetFileNames();
             }
             catch (ArgumentException)
@@ -534,15 +490,15 @@ namespace SaveOrganizer
         private void CreateQuickSave()
         {
             SetReadOnly(CurrentDirectory() + "\\" + "Quicksave", false);
-            File.Copy(GetGameSaveLocation(ComboBoxSelectGame.Text), CurrentDirectory() + "\\" + "Quicksave", true);
+            File.Copy(CurrentConfig.GetPath(ComboBoxSelectGame.Text), CurrentDirectory() + "\\" + "Quicksave", true);
         }
 
         private void LoadQuicksave()
         {
             if(File.Exists(CurrentDirectory() + "\\" + "Quicksave"))
             {
-                SetReadOnly(GetGameSaveLocation(ComboBoxSelectGame.Text), false);
-                File.Copy(CurrentDirectory() + "\\" + "Quicksave", GetGameSaveLocation(ComboBoxSelectGame.Text), true);
+                SetReadOnly(CurrentConfig.GetPath(ComboBoxSelectGame.Text), false);
+                File.Copy(CurrentDirectory() + "\\" + "Quicksave", CurrentConfig.GetPath(ComboBoxSelectGame.Text), true);
             }
         }
 
@@ -592,7 +548,7 @@ namespace SaveOrganizer
                 OldAttributes = OldAttributes & ~FileAttributes.ReadOnly;
                 File.SetAttributes(FileName, OldAttributes);
                 TempDel = DGVSaveFiles.CurrentRow.Cells[0].Value.ToString();
-                File.Copy(FileName, AppDataRoamingPath + "\\" + "TempDel", true);
+                File.Copy(FileName, Configuration.AppDataRoamingPath + "\\" + "TempDel", true);
 
                 File.Delete(FileName);
                 DGVSaveFiles.Rows.RemoveAt(DGVSaveFiles.CurrentRow.Index);
@@ -613,7 +569,7 @@ namespace SaveOrganizer
             FormSettings Settings = new FormSettings();
             Settings.StartPosition = FormStartPosition.CenterParent;
             Settings.ShowDialog();
-            CurrentConfig.Load();
+            CurrentConfig = Configuration.Load();
             ReadGlobalConfigurations();
         }
 
@@ -683,7 +639,7 @@ namespace SaveOrganizer
                     CurrentConfig.Games.Add(new Game(GameName, ""));
                 }
 
-                Directory.CreateDirectory(AppDataRoamingPath + "//" + GameName + "//" + "Default");
+                Directory.CreateDirectory(Configuration.AppDataRoamingPath + "//" + GameName + "//" + "Default");
 
                 LoadGameList();
                 ComboBoxSelectGame.Text = GameName;
@@ -694,14 +650,11 @@ namespace SaveOrganizer
         {
             ComboBoxSelectGame.DataSource = null;
             ComboBoxSelectGame.Items.Clear();
-            XmlDocument Xml = new XmlDocument();
-            Xml.Load(ConfigurationFile);
 
-            XmlNodeList GameNodes = Xml.SelectNodes("//Games//Game");
             List<string> GameList = new List<string>();
-            foreach (XmlNode Node in GameNodes)
+            foreach (Game xGame in CurrentConfig.Games)
             {
-                GameList.Add(Node["Name"].InnerText);
+                GameList.Add(xGame.Name);
             }
             GameList.Add("Add new...");
 
@@ -720,7 +673,7 @@ namespace SaveOrganizer
                 }
                 else
                 {
-                    Directory.Delete(AppDataRoamingPath + "//" + GameName, true);
+                    Directory.Delete(Configuration.AppDataRoamingPath + "//" + GameName, true);
                     CurrentConfig.RemoveGame(GameName);
                     CurrentConfig.Save();
                     LoadGameList();
