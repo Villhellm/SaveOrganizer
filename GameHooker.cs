@@ -59,15 +59,7 @@ namespace SaveOrganizer
 
         private void FillDictionary()
         {
-            string line;
-            LuaFunctions = new Dictionary<string, int>();
-            StreamReader file = new StreamReader("Resources\\FuncLocs.txt");
-            while ((line = file.ReadLine()) != null)
-            {
-                LuaFunctions.Add(line.Substring(line.IndexOf("|")+1), Convert.ToInt32(line.Substring(0, 8)));
-            }
-
-            file.Close();
+            LuaFunctions = FuncLocs.LuaFunctions();
         }
 
         public void ExitToMainMenu()
