@@ -106,7 +106,8 @@ namespace SaveOrganizer
                             case "Warp":
                                 if (ComboBoxSelectGame.Text == "Dark Souls")
                                 {
-                                    dsHooker.WarpToStart();
+                                    dsHooker.ToggleNoClip();
+                                    //dsHooker.WarpToStart();
                                 }
                                 else
                                 {

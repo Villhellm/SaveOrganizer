@@ -3,16 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reflection;
+using Microsoft.VisualBasic;
+using System.Globalization;
 
 namespace SaveOrganizer
 {
     class GameHooker
     {
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern bool WriteProcessMemory(IntPtr hProcess, uint lpBaseAddress, byte[] lpBuffer, int dwSize, int lpNumberOfBytesWritten);
 
@@ -30,6 +37,9 @@ namespace SaveOrganizer
 
         private IntPtr _targetProcessHandle = IntPtr.Zero;
 
+        Dictionary<string, int> LuaFunctions;
+        private bool NoClip = false;
+
         private void AttachToProcess()
         {
             Process[] AllProcesses = Process.GetProcesses();
@@ -40,6 +50,24 @@ namespace SaveOrganizer
                     _targetProcessHandle = OpenProcess(0x1f0fff, false, Proc.Id);
                 }
             }
+        }
+
+        public GameHooker()
+        {
+            FillDictionary();
+        }
+
+        private void FillDictionary()
+        {
+            string line;
+            LuaFunctions = new Dictionary<string, int>();
+            StreamReader file = new StreamReader("Resources\\FuncLocs.txt");
+            while ((line = file.ReadLine()) != null)
+            {
+                LuaFunctions.Add(line.Substring(line.IndexOf("|")+1), Convert.ToInt32(line.Substring(0, 8)));
+            }
+
+            file.Close();
         }
 
         public void ExitToMainMenu()
@@ -104,6 +132,116 @@ namespace SaveOrganizer
             WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x0019EEE4) + 0x114), BitConverter.GetBytes(2), 4, 0);
         }
 
+
+        private delegate Int32 MyAdd(Int32 x, Int32 y);
+
+        public void SetMapHit(bool YesNo)
+        {
+            AttachToProcess();
+            if (YesNo)
+            {
+                RunLuaScript("disablemaphit", "10000", "0");
+
+            }
+            else
+            {
+                RunLuaScript("disablemaphit", "10000", "1");
+            }
+        }
+
+        public void SetGravity(bool YesNo)
+        {
+            AttachToProcess();
+            if (YesNo)
+            {
+                RunLuaScript("setdisablegravity", "10000", "0");
+
+            }
+            else
+            {
+                RunLuaScript("setdisablegravity", "10000", "1");
+            }
+        }
+
+        public void ToggleNoClip()
+        {
+            if (NoClip)
+            {
+                SetGravity(true);
+                SetMapHit(true);
+                NoClip = false;
+            }
+            else
+            {
+                SetGravity(false);
+                SetMapHit(false);
+                NoClip = true;
+            }
+        }
+
+        public void RunLuaScript(string LuaFunction, string Param1 = "", string Param2 = "", string Param3 = "", string Param4 = "", string Param5 = "")
+        {
+            List<string> Params = new List<string>() { Param1, Param2, Param3, Param4, Param5 };
+            IntPtr Param = Marshal.AllocHGlobal(4);
+            int funcPtr = (int)VirtualAllocEx(_targetProcessHandle, 0, 1024, 4096, 0x40);
+            int ParamInt;
+            Single ParamFloat;
+
+            ASM A = new ASM();
+            LuaFunction = LuaFunction.ToLower();
+            A.Position = funcPtr;
+            A.AddVar("funcloc", LuaFunctions[LuaFunction]);
+            A.AddVar("returnedloc", funcPtr + 0x200);
+            A.AddASM("push ebp");
+            A.AddASM("mov ebp,esp");
+            A.AddASM("push eax");
+
+            for (int i = 4; i >= 0; i += -1)
+            {
+                if (Params[i].ToLower() == "false")
+                    Params[i] = "0";
+                if (Params[i].ToLower() == "true")
+                    Params[i] = "1";
+                if (Params[i].Length < 1)
+                    Params[i] = "0";
+
+                if (Params[i].Contains("."))
+                {
+                    ParamFloat = Convert.ToSingle(Params[i], new CultureInfo("en-us"));
+                    Marshal.StructureToPtr(ParamFloat, Param, false);
+                    A.AddVar("param" + i, Marshal.ReadInt32(Param));
+                }
+                else
+                {
+                    ParamInt = Convert.ToInt32(Params[i], new CultureInfo("en-us"));
+                    A.AddVar("param" + i, ParamInt);
+                }
+
+                A.AddASM("mov eax,param" + i);
+                A.AddASM("push eax");
+
+            }
+            A.AddASM("call funcloc");
+            A.AddASM("mov ebx,returnedloc");
+            A.AddASM("mov [ebx],eax");
+            A.AddASM("pop eax");
+            A.AddASM("pop eax");
+            A.AddASM("pop eax");
+            A.AddASM("pop eax");
+            A.AddASM("pop eax");
+            A.AddASM("pop eax");
+            A.AddASM("mov esp,ebp");
+            A.AddASM("pop ebp");
+            A.AddASM("ret");
+
+            Marshal.FreeHGlobal(Param);
+
+
+            WriteProcessMemory(_targetProcessHandle,Convert.ToUInt32(funcPtr), A.Bytes.ToArray(), 1024, 0);
+            CreateRemoteThread(_targetProcessHandle, 0, 0, Convert.ToUInt32(funcPtr), 0, 0, 0);
+            Thread.Sleep(5);
+        }
+
         public void QuitToMenuDoThingsThenLoadSaveMenu(Action DoThings)
         {
             if (InGame())
@@ -133,6 +271,7 @@ namespace SaveOrganizer
                     return true;
                 }
             }
+
             return false;
         }
     }

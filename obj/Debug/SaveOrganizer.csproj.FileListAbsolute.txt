@@ -27,3 +27,4 @@ C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\
 C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.exe
 C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.pdb
 C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\obj\Debug\SaveOrganizer.csproj.CoreCompileInputs.cache
+C:\Users\wlato\Documents\Program Master Source Code\SaveOrganizer\SaveOrganizer\bin\Debug\Resources\FuncLocs.txt
