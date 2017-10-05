@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,6 +19,7 @@ namespace SaveOrganizer
         private string ConfigurationFile = Configuration.ConfigurationFile;
         public string LatestVersion { get; set; }
         public string CurrentVersion { get; set; }
+        private Point FormStartPoint;
         string MemeURLCacheBlocker = "?t=" + DateTime.Now.ToString().Replace(" ", "");
 
         public string GetLatestVersion()
@@ -44,14 +46,63 @@ namespace SaveOrganizer
         public void CheckForUpdate(object sender, DoWorkEventArgs e)
         {
             LatestVersion = GetLatestVersion();
-            if (CurrentVersion != "" && LatestVersion != "" && LatestVersion != CurrentVersion)
+            if (CurrentVersion != "" && LatestVersion != "" && VersionCompare(CurrentVersion, LatestVersion))
             {
-                DialogResult DR = MessageBox.Show("Version " + LatestVersion + " is available, would you like to update?", "Update", MessageBoxButtons.YesNo);
+                FormUpdatePrompt Prompt = new FormUpdatePrompt("Version " + LatestVersion + " is available, would you like to update?");
+                DialogResult DR = Prompt.ShowDialog();
                 if (DR == DialogResult.Yes)
                 {
                     UpdateProgram();
                 }
+                if(DR == DialogResult.Abort)
+                {
+                    Configuration CurrentConfig = Configuration.Load();
+                    CurrentConfig.LastCommitID = "9999999.9.9.9";
+                    CurrentConfig.Save();
+                }
             }
+        }
+
+        public bool VersionCompare(string VersionOriginal, string VersionToCheck)
+        {
+            int VO1, VO2, VO3, VO4, VC1, VC2, VC3, VC4;
+
+            VO1 = Convert.ToInt32(VersionOriginal.Substring(0, VersionOriginal.IndexOf('.')));
+            VersionOriginal = VersionOriginal.Substring(VersionOriginal.IndexOf('.') + 1);
+            VO2 = Convert.ToInt32(VersionOriginal.Substring(0, VersionOriginal.IndexOf('.')));
+            VersionOriginal = VersionOriginal.Substring(VersionOriginal.IndexOf('.') + 1);
+            VO3 = Convert.ToInt32(VersionOriginal.Substring(0, VersionOriginal.IndexOf('.')));
+            VersionOriginal = VersionOriginal.Substring(VersionOriginal.IndexOf('.') + 1);
+            VO4 = Convert.ToInt32(VersionOriginal);
+
+            VC1 = Convert.ToInt32(VersionToCheck.Substring(0, VersionToCheck.IndexOf('.')));
+            VersionToCheck = VersionToCheck.Substring(VersionToCheck.IndexOf('.') + 1);
+            VC2 = Convert.ToInt32(VersionToCheck.Substring(0, VersionToCheck.IndexOf('.')));
+            VersionToCheck = VersionToCheck.Substring(VersionToCheck.IndexOf('.') + 1);
+            VC3 = Convert.ToInt32(VersionToCheck.Substring(0, VersionToCheck.IndexOf('.')));
+            VersionToCheck = VersionToCheck.Substring(VersionToCheck.IndexOf('.') + 1);
+            VC4 = Convert.ToInt32(VersionToCheck);
+
+            if (VC1 > VO1)
+                return true;
+            else if(VC1 == VO1)
+            {
+                if (VC2 > VO2)
+                    return true;
+                else if (VC2 == VO2)
+                {
+                    if (VC3 > VO3)
+                        return true;
+                    else if (VC3 == VO3)
+                    {
+                        if (VC4 > VO4)
+                            return true;
+                    }
+                }
+            }
+
+            return false;
+
         }
 
         public void DownloadInternetFile(string sourceURL, string destinationPath)
@@ -110,7 +161,7 @@ namespace SaveOrganizer
 
         public void UpdateVersion()
         {
-            Configuration CurrentConfig = CurrentConfig = Configuration.Load();
+            Configuration CurrentConfig = Configuration.Load();
             CurrentConfig.LastCommitID = LatestVersion;
             CurrentConfig.Save();
         }

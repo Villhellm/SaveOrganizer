@@ -52,7 +52,6 @@ namespace SaveOrganizer
             dsHooker = new GameHooker();
             Updater = new GithubUpdater();
             Updater.CurrentVersion = CurrentConfig.LastCommitID;
-            Updater.LaunchUpdater();
         }
 
         public static bool IsAdministrator()
@@ -995,6 +994,7 @@ namespace SaveOrganizer
             {
                 ActionCenter.Toast("Not running as admin, global hotkeys will not work while in game", StartPoint(), 2);
             }
+            Updater.LaunchUpdater();
         }
 
         private void setSavefileSourceToolStripMenuItem_Click(object sender, EventArgs e)
