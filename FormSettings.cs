@@ -77,7 +77,6 @@ namespace SaveOrganizer
                 FLPHotkeys.Controls.Add(CB);
                 FLPHotkeys.Controls.Add(Lbl);
                 FLPHotkeys.SetFlowBreak(Lbl, true);
-
             }
         }
 
