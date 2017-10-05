@@ -81,65 +81,117 @@ namespace SaveOrganizer
 
         static List<int> ModifierList = new List<int>() { 160, 161, 162, 163 };
 
+        //old inefficient method
+        //private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        //{
+        //    int vkCode = Marshal.ReadInt32(lParam);
+        //    foreach (int Mod in ModifierList)
+        //    {
+        //        if (vkCode == Mod && wParam == (IntPtr)WM_KEYDOWN && KeyPrevious != vkCode)
+        //        {
+        //            Modifier = Mod;
+        //            KeyPrevious = vkCode;
+        //            CurrentKey = 0;
+        //            return CallNextHookEx(_hookID, nCode, wParam, lParam);
+        //        }
+        //        if (vkCode == Mod && wParam == (IntPtr)WM_KEYUP)
+        //        {
+        //            KeyPrevious = 0;
+        //            Modifier = 0;
+        //            if (CurrentKey == 0)
+        //            {
+        //                CurrentKey = vkCode;
+        //            }
+        //            return CallNextHookEx(_hookID, nCode, wParam, lParam);
+        //        }
+        //    }
+
+        //    if (wParam == (IntPtr)WM_KEYDOWN && KeyPrevious != vkCode)
+        //    {
+        //        if (Modifier == 164)
+        //        {
+        //            Modifier = 0;
+        //        }
+        //        KeyPrevious = vkCode;
+        //        CurrentKey = vkCode;
+        //    }
+
+        //    if (wParam == (IntPtr)WM_SYSKEYDOWN && KeyPrevious != vkCode)
+        //    {
+        //        KeyPrevious = vkCode;
+        //        Modifier = 164;
+        //        CurrentKey = 0;
+        //    }
+
+        //    if (wParam == (IntPtr)WM_SYSKEYUP)
+        //    {
+        //        KeyPrevious = 0;
+        //        CurrentKey = vkCode;
+        //    }
+
+        //    if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
+        //    {
+        //        KeyPrevious = 0;
+        //        if (vkCode == 164)
+        //        {
+        //            Modifier = 0;
+        //            if (CurrentKey == 0)
+        //            {
+        //                CurrentKey = vkCode;
+        //            }
+        //        }
+        //    }
+
+        //    return CallNextHookEx(_hookID, nCode, wParam, lParam);
+        //}
+
         private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             int vkCode = Marshal.ReadInt32(lParam);
-            foreach (int Mod in ModifierList)
+
+            if (wParam == (IntPtr)WM_KEYDOWN && vkCode != KeyPrevious)
             {
-                if (vkCode == Mod && wParam == (IntPtr)WM_KEYDOWN && KeyPrevious != vkCode)
+                KeyPrevious = vkCode;
+                foreach(int Mod in ModifierList)
                 {
-                    Modifier = Mod;
-                    KeyPrevious = vkCode;
-                    CurrentKey = 0;
-                    return CallNextHookEx(_hookID, nCode, wParam, lParam);
-                }
-                if (vkCode == Mod && wParam == (IntPtr)WM_KEYUP)
-                {
-                    KeyPrevious = 0;
-                    Modifier = 0;
-                    if (CurrentKey == 0)
+                    if(vkCode == Mod)
                     {
-                        CurrentKey = vkCode;
+                        Modifier = vkCode;
                     }
-                    return CallNextHookEx(_hookID, nCode, wParam, lParam);
                 }
             }
 
-            if (wParam == (IntPtr)WM_KEYDOWN && KeyPrevious != vkCode)
+            if (wParam == (IntPtr)WM_KEYUP)
             {
-                if (Modifier == 164)
+                foreach (int Mod in ModifierList)
+                {
+                    if (KeyPrevious == Mod)
+                    {
+                        Modifier = 0;
+                    }
+                }
+                if (KeyPrevious == vkCode && Modifier != 164)
+                {
+                    CurrentKey = vkCode;
+                    Modifier = 0;
+                }
+                if(Modifier == 164)
                 {
                     Modifier = 0;
                 }
-                KeyPrevious = vkCode;
-                CurrentKey = vkCode;
             }
 
-            if (wParam == (IntPtr)WM_SYSKEYDOWN && KeyPrevious != vkCode)
+            if (wParam == (IntPtr)WM_SYSKEYDOWN && vkCode != KeyPrevious)
             {
                 KeyPrevious = vkCode;
-                Modifier = 164;
-                CurrentKey = 0;
             }
 
             if (wParam == (IntPtr)WM_SYSKEYUP)
             {
-                KeyPrevious = 0;
+                Modifier = 164;
                 CurrentKey = vkCode;
             }
 
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
-            {
-                KeyPrevious = 0;
-                if (vkCode == 164)
-                {
-                    Modifier = 0;
-                    if (CurrentKey == 0)
-                    {
-                        CurrentKey = vkCode;
-                    }
-                }
-            }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
 

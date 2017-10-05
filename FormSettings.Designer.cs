@@ -29,23 +29,16 @@
         private void InitializeComponent()
         {
             this.CBToggleGlobalHotkeys = new System.Windows.Forms.CheckBox();
-            this.CBExportSelectedSave = new System.Windows.Forms.CheckBox();
-            this.CBImportCurrentSave = new System.Windows.Forms.CheckBox();
-            this.CBToggleReadOnly = new System.Windows.Forms.CheckBox();
             this.CBAlwaysOnTop = new System.Windows.Forms.CheckBox();
             this.BtnSave = new System.Windows.Forms.Button();
             this.BtnCancel = new System.Windows.Forms.Button();
-            this.TxtToggleReadOnlyHotkey = new System.Windows.Forms.Label();
-            this.TxtExportSaveHotkey = new System.Windows.Forms.Label();
-            this.TxtImportSaveHotkey = new System.Windows.Forms.Label();
-            this.TxtQuickSaveHotkey = new System.Windows.Forms.Label();
-            this.CBQuicksave = new System.Windows.Forms.CheckBox();
-            this.TxtQuickLoadHotkey = new System.Windows.Forms.Label();
-            this.CBQuickload = new System.Windows.Forms.CheckBox();
-            this.TxtWarp = new System.Windows.Forms.Label();
-            this.CBWarp = new System.Windows.Forms.CheckBox();
             this.LblVersion = new System.Windows.Forms.Label();
             this.BtnManualUpdateCheck = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.FLPHotkeys = new System.Windows.Forms.FlowLayoutPanel();
+            this.panel1.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // CBToggleGlobalHotkeys
@@ -59,39 +52,6 @@
             this.CBToggleGlobalHotkeys.UseVisualStyleBackColor = true;
             this.CBToggleGlobalHotkeys.CheckedChanged += new System.EventHandler(this.CBToggleGlobalHotkeys_CheckedChanged);
             // 
-            // CBExportSelectedSave
-            // 
-            this.CBExportSelectedSave.AutoSize = true;
-            this.CBExportSelectedSave.Enabled = false;
-            this.CBExportSelectedSave.Location = new System.Drawing.Point(68, 98);
-            this.CBExportSelectedSave.Name = "CBExportSelectedSave";
-            this.CBExportSelectedSave.Size = new System.Drawing.Size(129, 17);
-            this.CBExportSelectedSave.TabIndex = 1;
-            this.CBExportSelectedSave.Text = "Export Selected Save";
-            this.CBExportSelectedSave.UseVisualStyleBackColor = true;
-            // 
-            // CBImportCurrentSave
-            // 
-            this.CBImportCurrentSave.AutoSize = true;
-            this.CBImportCurrentSave.Enabled = false;
-            this.CBImportCurrentSave.Location = new System.Drawing.Point(68, 131);
-            this.CBImportCurrentSave.Name = "CBImportCurrentSave";
-            this.CBImportCurrentSave.Size = new System.Drawing.Size(120, 17);
-            this.CBImportCurrentSave.TabIndex = 2;
-            this.CBImportCurrentSave.Text = "Import Current Save";
-            this.CBImportCurrentSave.UseVisualStyleBackColor = true;
-            // 
-            // CBToggleReadOnly
-            // 
-            this.CBToggleReadOnly.AutoSize = true;
-            this.CBToggleReadOnly.Enabled = false;
-            this.CBToggleReadOnly.Location = new System.Drawing.Point(68, 164);
-            this.CBToggleReadOnly.Name = "CBToggleReadOnly";
-            this.CBToggleReadOnly.Size = new System.Drawing.Size(112, 17);
-            this.CBToggleReadOnly.TabIndex = 3;
-            this.CBToggleReadOnly.Text = "Toggle Read Only";
-            this.CBToggleReadOnly.UseVisualStyleBackColor = true;
-            // 
             // CBAlwaysOnTop
             // 
             this.CBAlwaysOnTop.AutoSize = true;
@@ -104,7 +64,7 @@
             // 
             // BtnSave
             // 
-            this.BtnSave.Location = new System.Drawing.Point(52, 311);
+            this.BtnSave.Location = new System.Drawing.Point(52, 362);
             this.BtnSave.Name = "BtnSave";
             this.BtnSave.Size = new System.Drawing.Size(75, 23);
             this.BtnSave.TabIndex = 8;
@@ -114,118 +74,13 @@
             // 
             // BtnCancel
             // 
-            this.BtnCancel.Location = new System.Drawing.Point(194, 311);
+            this.BtnCancel.Location = new System.Drawing.Point(194, 362);
             this.BtnCancel.Name = "BtnCancel";
             this.BtnCancel.Size = new System.Drawing.Size(75, 23);
             this.BtnCancel.TabIndex = 9;
             this.BtnCancel.Text = "Cancel";
             this.BtnCancel.UseVisualStyleBackColor = true;
             this.BtnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
-            // 
-            // TxtToggleReadOnlyHotkey
-            // 
-            this.TxtToggleReadOnlyHotkey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TxtToggleReadOnlyHotkey.Enabled = false;
-            this.TxtToggleReadOnlyHotkey.Location = new System.Drawing.Point(205, 164);
-            this.TxtToggleReadOnlyHotkey.Name = "TxtToggleReadOnlyHotkey";
-            this.TxtToggleReadOnlyHotkey.Size = new System.Drawing.Size(184, 24);
-            this.TxtToggleReadOnlyHotkey.TabIndex = 11;
-            this.TxtToggleReadOnlyHotkey.Click += new System.EventHandler(this.SaveHotkey_Click);
-            this.TxtToggleReadOnlyHotkey.Enter += new System.EventHandler(this.SaveHotkey_Enter);
-            this.TxtToggleReadOnlyHotkey.Leave += new System.EventHandler(this.SaveHotkey_Leave);
-            // 
-            // TxtExportSaveHotkey
-            // 
-            this.TxtExportSaveHotkey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TxtExportSaveHotkey.Enabled = false;
-            this.TxtExportSaveHotkey.Location = new System.Drawing.Point(205, 96);
-            this.TxtExportSaveHotkey.Name = "TxtExportSaveHotkey";
-            this.TxtExportSaveHotkey.Size = new System.Drawing.Size(184, 24);
-            this.TxtExportSaveHotkey.TabIndex = 12;
-            this.TxtExportSaveHotkey.Click += new System.EventHandler(this.SaveHotkey_Click);
-            this.TxtExportSaveHotkey.Enter += new System.EventHandler(this.SaveHotkey_Enter);
-            this.TxtExportSaveHotkey.Leave += new System.EventHandler(this.SaveHotkey_Leave);
-            // 
-            // TxtImportSaveHotkey
-            // 
-            this.TxtImportSaveHotkey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TxtImportSaveHotkey.Enabled = false;
-            this.TxtImportSaveHotkey.Location = new System.Drawing.Point(205, 130);
-            this.TxtImportSaveHotkey.Name = "TxtImportSaveHotkey";
-            this.TxtImportSaveHotkey.Size = new System.Drawing.Size(184, 24);
-            this.TxtImportSaveHotkey.TabIndex = 13;
-            this.TxtImportSaveHotkey.Click += new System.EventHandler(this.SaveHotkey_Click);
-            this.TxtImportSaveHotkey.Enter += new System.EventHandler(this.SaveHotkey_Enter);
-            this.TxtImportSaveHotkey.Leave += new System.EventHandler(this.SaveHotkey_Leave);
-            // 
-            // TxtQuickSaveHotkey
-            // 
-            this.TxtQuickSaveHotkey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TxtQuickSaveHotkey.Enabled = false;
-            this.TxtQuickSaveHotkey.Location = new System.Drawing.Point(205, 199);
-            this.TxtQuickSaveHotkey.Name = "TxtQuickSaveHotkey";
-            this.TxtQuickSaveHotkey.Size = new System.Drawing.Size(184, 24);
-            this.TxtQuickSaveHotkey.TabIndex = 15;
-            this.TxtQuickSaveHotkey.Click += new System.EventHandler(this.SaveHotkey_Click);
-            this.TxtQuickSaveHotkey.Enter += new System.EventHandler(this.SaveHotkey_Enter);
-            this.TxtQuickSaveHotkey.Leave += new System.EventHandler(this.SaveHotkey_Leave);
-            // 
-            // CBQuicksave
-            // 
-            this.CBQuicksave.AutoSize = true;
-            this.CBQuicksave.Enabled = false;
-            this.CBQuicksave.Location = new System.Drawing.Point(68, 199);
-            this.CBQuicksave.Name = "CBQuicksave";
-            this.CBQuicksave.Size = new System.Drawing.Size(82, 17);
-            this.CBQuicksave.TabIndex = 14;
-            this.CBQuicksave.Text = "Quick-Save";
-            this.CBQuicksave.UseVisualStyleBackColor = true;
-            // 
-            // TxtQuickLoadHotkey
-            // 
-            this.TxtQuickLoadHotkey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TxtQuickLoadHotkey.Enabled = false;
-            this.TxtQuickLoadHotkey.Location = new System.Drawing.Point(205, 233);
-            this.TxtQuickLoadHotkey.Name = "TxtQuickLoadHotkey";
-            this.TxtQuickLoadHotkey.Size = new System.Drawing.Size(184, 24);
-            this.TxtQuickLoadHotkey.TabIndex = 17;
-            this.TxtQuickLoadHotkey.Click += new System.EventHandler(this.SaveHotkey_Click);
-            this.TxtQuickLoadHotkey.Enter += new System.EventHandler(this.SaveHotkey_Enter);
-            this.TxtQuickLoadHotkey.Leave += new System.EventHandler(this.SaveHotkey_Leave);
-            // 
-            // CBQuickload
-            // 
-            this.CBQuickload.AutoSize = true;
-            this.CBQuickload.Enabled = false;
-            this.CBQuickload.Location = new System.Drawing.Point(68, 233);
-            this.CBQuickload.Name = "CBQuickload";
-            this.CBQuickload.Size = new System.Drawing.Size(81, 17);
-            this.CBQuickload.TabIndex = 16;
-            this.CBQuickload.Text = "Quick-Load";
-            this.CBQuickload.UseVisualStyleBackColor = true;
-            // 
-            // TxtWarp
-            // 
-            this.TxtWarp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.TxtWarp.Enabled = false;
-            this.TxtWarp.Location = new System.Drawing.Point(205, 269);
-            this.TxtWarp.Name = "TxtWarp";
-            this.TxtWarp.Size = new System.Drawing.Size(184, 24);
-            this.TxtWarp.TabIndex = 19;
-            this.TxtWarp.Click += new System.EventHandler(this.SaveHotkey_Click);
-            this.TxtWarp.Enter += new System.EventHandler(this.SaveHotkey_Enter);
-            this.TxtWarp.Leave += new System.EventHandler(this.SaveHotkey_Leave);
-            // 
-            // CBWarp
-            // 
-            this.CBWarp.AutoSize = true;
-            this.CBWarp.Enabled = false;
-            this.CBWarp.Location = new System.Drawing.Point(68, 269);
-            this.CBWarp.Name = "CBWarp";
-            this.CBWarp.Size = new System.Drawing.Size(123, 17);
-            this.CBWarp.TabIndex = 18;
-            this.CBWarp.Text = "Warp to Last Spawn";
-            this.CBWarp.UseVisualStyleBackColor = true;
             // 
             // LblVersion
             // 
@@ -246,33 +101,56 @@
             this.BtnManualUpdateCheck.UseVisualStyleBackColor = true;
             this.BtnManualUpdateCheck.Click += new System.EventHandler(this.BtnManualUpdateCheck_Click);
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.tableLayoutPanel1);
+            this.panel1.Location = new System.Drawing.Point(69, 95);
+            this.panel1.Margin = new System.Windows.Forms.Padding(0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(332, 264);
+            this.panel1.TabIndex = 22;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.FLPHotkeys, 0, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(332, 264);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // FLPHotkeys
+            // 
+            this.FLPHotkeys.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FLPHotkeys.Location = new System.Drawing.Point(0, 0);
+            this.FLPHotkeys.Margin = new System.Windows.Forms.Padding(0);
+            this.FLPHotkeys.Name = "FLPHotkeys";
+            this.FLPHotkeys.Size = new System.Drawing.Size(332, 264);
+            this.FLPHotkeys.TabIndex = 0;
+            // 
             // FormSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(401, 358);
+            this.ClientSize = new System.Drawing.Size(410, 410);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.BtnManualUpdateCheck);
             this.Controls.Add(this.LblVersion);
-            this.Controls.Add(this.TxtWarp);
-            this.Controls.Add(this.CBWarp);
-            this.Controls.Add(this.TxtQuickLoadHotkey);
-            this.Controls.Add(this.CBQuickload);
-            this.Controls.Add(this.TxtQuickSaveHotkey);
-            this.Controls.Add(this.CBQuicksave);
-            this.Controls.Add(this.TxtImportSaveHotkey);
-            this.Controls.Add(this.TxtExportSaveHotkey);
-            this.Controls.Add(this.TxtToggleReadOnlyHotkey);
             this.Controls.Add(this.BtnCancel);
             this.Controls.Add(this.BtnSave);
             this.Controls.Add(this.CBAlwaysOnTop);
-            this.Controls.Add(this.CBToggleReadOnly);
-            this.Controls.Add(this.CBImportCurrentSave);
-            this.Controls.Add(this.CBExportSelectedSave);
             this.Controls.Add(this.CBToggleGlobalHotkeys);
             this.Name = "FormSettings";
             this.ShowIcon = false;
             this.Text = "User Settings";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormSettings_FormClosing);
+            this.panel1.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -281,22 +159,13 @@
         #endregion
 
         private System.Windows.Forms.CheckBox CBToggleGlobalHotkeys;
-        private System.Windows.Forms.CheckBox CBExportSelectedSave;
-        private System.Windows.Forms.CheckBox CBImportCurrentSave;
-        private System.Windows.Forms.CheckBox CBToggleReadOnly;
         private System.Windows.Forms.CheckBox CBAlwaysOnTop;
         private System.Windows.Forms.Button BtnSave;
         private System.Windows.Forms.Button BtnCancel;
-        private System.Windows.Forms.Label TxtToggleReadOnlyHotkey;
-        private System.Windows.Forms.Label TxtExportSaveHotkey;
-        private System.Windows.Forms.Label TxtImportSaveHotkey;
-        private System.Windows.Forms.Label TxtQuickSaveHotkey;
-        private System.Windows.Forms.CheckBox CBQuicksave;
-        private System.Windows.Forms.Label TxtQuickLoadHotkey;
-        private System.Windows.Forms.CheckBox CBQuickload;
-        private System.Windows.Forms.Label TxtWarp;
-        private System.Windows.Forms.CheckBox CBWarp;
         private System.Windows.Forms.Label LblVersion;
         private System.Windows.Forms.Button BtnManualUpdateCheck;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.FlowLayoutPanel FLPHotkeys;
     }
 }

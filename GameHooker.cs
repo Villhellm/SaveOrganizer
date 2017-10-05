@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
-using Microsoft.VisualBasic;
 using System.Globalization;
 
 namespace SaveOrganizer
@@ -39,6 +38,7 @@ namespace SaveOrganizer
 
         Dictionary<string, int> LuaFunctions;
         private bool NoClip = false;
+        private bool Damage = true;
 
         private void AttachToProcess()
         {
@@ -118,7 +118,7 @@ namespace SaveOrganizer
         }
 
         public void LoadSaveMenu()
-        {            
+        {
             AttachToProcess();
             WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x0019EEE4)+ 0x108), BitConverter.GetBytes(3), 4, 0);
             WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x0019EEE4) + 0x114), BitConverter.GetBytes(2), 4, 0);
@@ -171,8 +171,23 @@ namespace SaveOrganizer
             }
         }
 
+        public void ToggleDamage()
+        {
+            //if (Damage)
+            //{
+                RunLuaScript("disabledamage", "10000", "1");
+                Damage = false;
+            //}
+            //else
+            //{
+            //    RunLuaScript("disabledamage", "10000", "0");
+            //    Damage = true;
+            //}
+        }
+
         public void RunLuaScript(string LuaFunction, string Param1 = "", string Param2 = "", string Param3 = "", string Param4 = "", string Param5 = "")
         {
+            AttachToProcess();
             List<string> Params = new List<string>() { Param1, Param2, Param3, Param4, Param5 };
             IntPtr Param = Marshal.AllocHGlobal(4);
             int funcPtr = (int)VirtualAllocEx(_targetProcessHandle, 0, 1024, 4096, 0x40);
@@ -236,6 +251,8 @@ namespace SaveOrganizer
 
         public void QuitToMenuDoThingsThenLoadSaveMenu(Action DoThings)
         {
+            AttachToProcess();
+
             if (InGame())
             {
                 ExitToMainMenu();

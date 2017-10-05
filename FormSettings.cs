@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace SaveOrganizer
 {
@@ -54,95 +55,40 @@ namespace SaveOrganizer
 
             foreach (Hotkey xHotkey in CurrentConfig.Hotkeys)
             {
-                if (xHotkey.Name == "ImportSave")
+                CheckBox CB = new CheckBox();
+                CB.Text = AddSpaces(xHotkey.Name);
+                CB.Checked = xHotkey.Enabled;
+                CB.Enabled = CurrentConfig.EnableHotkeys;
+                Label Lbl = new Label();
+                Lbl.BorderStyle = BorderStyle.FixedSingle;
+                Lbl.Click += SaveHotkey_Click;
+                Lbl.Enabled = CurrentConfig.EnableHotkeys;
+                if (xHotkey.Modifier == "None")
                 {
-                    CBImportCurrentSave.Checked = xHotkey.Enabled;
-                    if(xHotkey.Modifier != "None")
-                    {
-                        TxtImportSaveHotkey.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
-                    }
-                    else
-                    {
-                        TxtImportSaveHotkey.Text = xHotkey.KeyCode;
-                    }
+                    Lbl.Text = xHotkey.KeyCode;
                 }
-                if (xHotkey.Name == "ExportSave")
+                else
                 {
-                    CBExportSelectedSave.Checked = xHotkey.Enabled;
-                    if (xHotkey.Modifier != "None")
-                    {
-                        TxtExportSaveHotkey.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
-                    }
-                    else
-                    {
-                        TxtExportSaveHotkey.Text = xHotkey.KeyCode;
-                    }
+                    Lbl.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
                 }
-                if (xHotkey.Name == "ToggleReadOnly")
-                {
-                    CBToggleReadOnly.Checked = xHotkey.Enabled;
-                    if (xHotkey.Modifier != "None")
-                    {
-                        TxtToggleReadOnlyHotkey.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
-                    }
-                    else
-                    {
-                        TxtToggleReadOnlyHotkey.Text = xHotkey.KeyCode;
-                    }
-                }
-                if (xHotkey.Name == "Quicksave")
-                {
-                    CBQuicksave.Checked = xHotkey.Enabled;
-                    if (xHotkey.Modifier != "None")
-                    {
-                        TxtQuickSaveHotkey.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
-                    }
-                    else
-                    {
-                        TxtQuickSaveHotkey.Text = xHotkey.KeyCode;
-                    }
-                }
-                if (xHotkey.Name == "Quickload")
-                {
-                    CBQuickload.Checked = xHotkey.Enabled;
-                    if (xHotkey.Modifier != "None")
-                    {
-                        TxtQuickLoadHotkey.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
-                    }
-                    else
-                    {
-                        TxtQuickLoadHotkey.Text = xHotkey.KeyCode;
-                    }
-                }
-                if (xHotkey.Name == "Warp")
-                {
-                    CBWarp.Checked = xHotkey.Enabled;
-                    if (xHotkey.Modifier != "None")
-                    {
-                        TxtWarp.Text = xHotkey.Modifier + " + " + xHotkey.KeyCode;
-                    }
-                    else
-                    {
-                        TxtWarp.Text = xHotkey.KeyCode;
-                    }
-                }
+
+                FLPHotkeys.Controls.Add(CB);
+                FLPHotkeys.Controls.Add(Lbl);
+                FLPHotkeys.SetFlowBreak(Lbl, true);
             }
         }
 
         private void CBToggleGlobalHotkeys_CheckedChanged(object sender, EventArgs e)
         {
-            List<CheckBox> HotKeyEnablers = new List<CheckBox>() { CBExportSelectedSave, CBImportCurrentSave, CBToggleReadOnly, CBQuicksave, CBQuickload, CBWarp };
-            List<Label> HotKeyEnablersBox = new List<Label>() { TxtExportSaveHotkey, TxtImportSaveHotkey, TxtToggleReadOnlyHotkey, TxtQuickSaveHotkey, TxtQuickLoadHotkey, TxtWarp };
-
-            foreach (CheckBox Enabler in HotKeyEnablers)
+            foreach (Control Enabler in FLPHotkeys.Controls)
             {
                 Enabler.Enabled = !Enabler.Enabled;
             }
+        }
 
-            foreach(Label Txt in HotKeyEnablersBox)
-            {
-                Txt.Enabled = !Txt.Enabled;
-            }
+        private string AddSpaces(string Change)
+        {
+            return Regex.Replace(Change, "(\\B[A-Z])", " $1");
         }
 
         private void BtnSave_Click(object sender, EventArgs e)
@@ -161,17 +107,13 @@ namespace SaveOrganizer
 
             CurrentConfig.Hotkeys.Clear();
 
-            AddHotkey("ImportSave", CBImportCurrentSave, TxtImportSaveHotkey);
-
-            AddHotkey("ExportSave", CBExportSelectedSave, TxtExportSaveHotkey);
-
-            AddHotkey("ToggleReadOnly", CBToggleReadOnly, TxtToggleReadOnlyHotkey);
-
-            AddHotkey("Quicksave", CBQuicksave, TxtQuickSaveHotkey);
-
-            AddHotkey("Quickload", CBQuickload, TxtQuickLoadHotkey);
-
-            AddHotkey("Warp", CBWarp, TxtWarp);
+            foreach(Control C in FLPHotkeys.Controls)
+            {
+                if(C is CheckBox)
+                {
+                    AddHotkey(C.Text.Replace(" ", ""), (CheckBox)C, (Label)FLPHotkeys.Controls[FLPHotkeys.Controls.IndexOf(C) + 1]);
+                }
+            }
 
             CurrentConfig.Save();
             Close();

@@ -514,7 +514,7 @@
             this.Controls.Add(this.TSMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
-            this.Text = "Save Organizer";
+            this.Text = "Speedrun Assistant";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Shown += new System.EventHandler(this.FormMain_Shown);
             this.CSMGameEdit.ResumeLayout(false);
