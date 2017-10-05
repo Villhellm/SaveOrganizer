@@ -34,11 +34,7 @@
             this.BtnCancel = new System.Windows.Forms.Button();
             this.LblVersion = new System.Windows.Forms.Label();
             this.BtnManualUpdateCheck = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.FLPHotkeys = new System.Windows.Forms.FlowLayoutPanel();
-            this.panel1.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // CBToggleGlobalHotkeys
@@ -64,7 +60,7 @@
             // 
             // BtnSave
             // 
-            this.BtnSave.Location = new System.Drawing.Point(52, 362);
+            this.BtnSave.Location = new System.Drawing.Point(52, 398);
             this.BtnSave.Name = "BtnSave";
             this.BtnSave.Size = new System.Drawing.Size(75, 23);
             this.BtnSave.TabIndex = 8;
@@ -74,7 +70,7 @@
             // 
             // BtnCancel
             // 
-            this.BtnCancel.Location = new System.Drawing.Point(194, 362);
+            this.BtnCancel.Location = new System.Drawing.Point(194, 398);
             this.BtnCancel.Name = "BtnCancel";
             this.BtnCancel.Size = new System.Drawing.Size(75, 23);
             this.BtnCancel.TabIndex = 9;
@@ -101,44 +97,22 @@
             this.BtnManualUpdateCheck.UseVisualStyleBackColor = true;
             this.BtnManualUpdateCheck.Click += new System.EventHandler(this.BtnManualUpdateCheck_Click);
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.tableLayoutPanel1);
-            this.panel1.Location = new System.Drawing.Point(69, 95);
-            this.panel1.Margin = new System.Windows.Forms.Padding(0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(332, 264);
-            this.panel1.TabIndex = 22;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.FLPHotkeys, 0, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(332, 264);
-            this.tableLayoutPanel1.TabIndex = 0;
-            // 
             // FLPHotkeys
             // 
-            this.FLPHotkeys.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.FLPHotkeys.Location = new System.Drawing.Point(0, 0);
+            this.FLPHotkeys.AutoSize = true;
+            this.FLPHotkeys.Location = new System.Drawing.Point(52, 105);
             this.FLPHotkeys.Margin = new System.Windows.Forms.Padding(0);
             this.FLPHotkeys.Name = "FLPHotkeys";
             this.FLPHotkeys.Size = new System.Drawing.Size(332, 264);
             this.FLPHotkeys.TabIndex = 0;
+            this.FLPHotkeys.Resize += new System.EventHandler(this.FLPHotkeys_Resize);
             // 
             // FormSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(410, 410);
-            this.Controls.Add(this.panel1);
+            this.ClientSize = new System.Drawing.Size(410, 433);
+            this.Controls.Add(this.FLPHotkeys);
             this.Controls.Add(this.BtnManualUpdateCheck);
             this.Controls.Add(this.LblVersion);
             this.Controls.Add(this.BtnCancel);
@@ -149,8 +123,6 @@
             this.ShowIcon = false;
             this.Text = "User Settings";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormSettings_FormClosing);
-            this.panel1.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -164,8 +136,6 @@
         private System.Windows.Forms.Button BtnCancel;
         private System.Windows.Forms.Label LblVersion;
         private System.Windows.Forms.Button BtnManualUpdateCheck;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.FlowLayoutPanel FLPHotkeys;
     }
 }

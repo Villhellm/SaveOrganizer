@@ -183,5 +183,11 @@ namespace SaveOrganizer
             Point Inter = new Point(this.Location.X + Width / 2 - 186, Location.Y + Height - 170);
             return Inter;
         }
+
+        private void FLPHotkeys_Resize(object sender, EventArgs e)
+        {
+            BtnSave.Location = new Point(52, FLPHotkeys.Location.Y + FLPHotkeys.Height + 20);
+            BtnCancel.Location = new Point(194, FLPHotkeys.Location.Y + FLPHotkeys.Height + 20);
+        }
     }
 }

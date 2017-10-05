@@ -39,6 +39,7 @@ namespace SaveOrganizer
         Dictionary<string, int> LuaFunctions;
         private bool NoClip = false;
         private bool Damage = true;
+        private bool AIEnabled = true;
 
         private void AttachToProcess()
         {
@@ -124,7 +125,6 @@ namespace SaveOrganizer
             WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x0019EEE4) + 0x114), BitConverter.GetBytes(2), 4, 0);
         }
 
-
         private delegate Int32 MyAdd(Int32 x, Int32 y);
 
         public void SetMapHit(bool YesNo)
@@ -173,16 +173,31 @@ namespace SaveOrganizer
 
         public void ToggleDamage()
         {
-            //if (Damage)
-            //{
+            if (Damage)
+            {
                 RunLuaScript("disabledamage", "10000", "1");
                 Damage = false;
-            //}
-            //else
-            //{
-            //    RunLuaScript("disabledamage", "10000", "0");
-            //    Damage = true;
-            //}
+            }
+            else
+            {
+                RunLuaScript("disabledamage", "10000", "0");
+                Damage = true;
+            }
+        }
+
+        public void ToggleAI()
+        {
+            AttachToProcess();
+            if (AIEnabled)
+            {
+                WriteProcessMemory(_targetProcessHandle, 0x13784EE, BitConverter.GetBytes(1), 4, 0);
+                AIEnabled = false;
+            }
+            else
+            {
+                WriteProcessMemory(_targetProcessHandle, 0x13784EE, BitConverter.GetBytes(0), 4, 0);
+                AIEnabled = true;
+            }
         }
 
         public void RunLuaScript(string LuaFunction, string Param1 = "", string Param2 = "", string Param3 = "", string Param4 = "", string Param5 = "")

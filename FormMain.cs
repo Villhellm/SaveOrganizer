@@ -111,7 +111,7 @@ namespace SaveOrganizer
                                     ActionCenter.Toast("That only works for Dark Souls 1, oops :/", StartPoint(), 1);
                                 }
                                 break;
-                            case "EnableNoClip":
+                            case "ToggleNoClip":
                                 if (ComboBoxSelectGame.Text == "Dark Souls")
                                 {
                                     dsHooker.ToggleNoClip();
@@ -121,10 +121,20 @@ namespace SaveOrganizer
                                     ActionCenter.Toast("That only works for Dark Souls 1, oops :/", StartPoint(), 1);
                                 }
                                 break;
-                            case "DisableDamage":
+                            case "ToggleDamage":
                                 if (ComboBoxSelectGame.Text == "Dark Souls")
                                 {
                                     dsHooker.ToggleDamage();
+                                }
+                                else
+                                {
+                                    ActionCenter.Toast("That only works for Dark Souls 1, oops :/", StartPoint(), 1);
+                                }
+                                break;
+                            case "ToggleAI":
+                                if (ComboBoxSelectGame.Text == "Dark Souls")
+                                {
+                                    dsHooker.ToggleAI();
                                 }
                                 else
                                 {
