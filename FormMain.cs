@@ -12,7 +12,6 @@ namespace SaveOrganizer
 {
     public partial class FormMain : Form
     {
-        //Unnecessary additions to a functional program
         KeyHooker Hooker;
         GameHooker dsHooker;
         GithubUpdater Updater;
@@ -106,9 +105,27 @@ namespace SaveOrganizer
                             case "Warp":
                                 if (ComboBoxSelectGame.Text == "Dark Souls")
                                 {
-                                    dsHooker.ToggleDamage();
+                                    dsHooker.WarpToStart();
+                                }
+                                else
+                                {
+                                    ActionCenter.Toast("That only works for Dark Souls 1, oops :/", StartPoint(), 1);
+                                }
+                                break;
+                            case "EnableNoClip":
+                                if (ComboBoxSelectGame.Text == "Dark Souls")
+                                {
                                     dsHooker.ToggleNoClip();
-                                    //dsHooker.WarpToStart();
+                                }
+                                else
+                                {
+                                    ActionCenter.Toast("That only works for Dark Souls 1, oops :/", StartPoint(), 1);
+                                }
+                                break;
+                            case "DisableDamage":
+                                if (ComboBoxSelectGame.Text == "Dark Souls")
+                                {
+                                    dsHooker.ToggleDamage();
                                 }
                                 else
                                 {

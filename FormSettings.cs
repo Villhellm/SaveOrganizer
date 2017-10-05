@@ -59,10 +59,12 @@ namespace SaveOrganizer
                 CB.Text = AddSpaces(xHotkey.Name);
                 CB.Checked = xHotkey.Enabled;
                 CB.Enabled = CurrentConfig.EnableHotkeys;
+                CB.Width = 175;
                 Label Lbl = new Label();
                 Lbl.BorderStyle = BorderStyle.FixedSingle;
                 Lbl.Click += SaveHotkey_Click;
                 Lbl.Enabled = CurrentConfig.EnableHotkeys;
+                Lbl.Anchor = AnchorStyles.Right;
                 if (xHotkey.Modifier == "None")
                 {
                     Lbl.Text = xHotkey.KeyCode;
@@ -75,6 +77,7 @@ namespace SaveOrganizer
                 FLPHotkeys.Controls.Add(CB);
                 FLPHotkeys.Controls.Add(Lbl);
                 FLPHotkeys.SetFlowBreak(Lbl, true);
+
             }
         }
 

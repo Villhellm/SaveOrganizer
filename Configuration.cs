@@ -268,7 +268,8 @@ namespace SaveOrganizer
             VerifyHotkeyNode(Xml, "Quicksave");
             VerifyHotkeyNode(Xml, "Quickload");
             VerifyHotkeyNode(Xml, "Warp");
-
+            VerifyHotkeyNode(Xml, "EnableNoClip");
+            VerifyHotkeyNode(Xml, "DisableDamage");
         }
 
         private void VerifyCommitNode(XDocument Xml)
