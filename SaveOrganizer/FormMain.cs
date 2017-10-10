@@ -134,8 +134,7 @@ namespace SaveOrganizer
                             case "ToggleAI":
                                 if (ComboBoxSelectGame.Text == "Dark Souls")
                                 {
-                                    SendKeys.SendWait("~");
-                                    //dsHooker.ToggleAI();
+                                    dsHooker.ToggleAI();
                                 }
                                 else
                                 {

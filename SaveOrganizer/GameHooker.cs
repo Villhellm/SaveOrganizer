@@ -38,7 +38,7 @@ namespace SaveOrganizer
         public static extern bool ReadProcessMemory(IntPtr hProcess, uint lpBaseAddress, byte[] lpBuffer, int dwSize, int lpNumberOfBytesRead);
 
         private IntPtr _targetProcessHandle = IntPtr.Zero;
-        private IntPtr _targetProcessBaseAddress = IntPtr.Zero;
+        public IntPtr _targetProcessBaseAddress = IntPtr.Zero;
         Dictionary<string, int> LuaFunctions;
         private bool NoClip = false;
         private bool Damage = true;
@@ -54,8 +54,7 @@ namespace SaveOrganizer
                     _targetProcessHandle = OpenProcess(0x1f0fff, false, Proc.Id);
                     _targetProcessBaseAddress =  Proc.MainModule.BaseAddress;
 
-                    WriteProcessMemory(_targetProcessHandle, (Pointer(0x0019EEE4) + 0x108), BitConverter.GetBytes(3), 4, 0);
-                    WriteProcessMemory(_targetProcessHandle, (uint)(_targetProcessBaseAddress + 0xD647C), BitConverter.GetBytes(2), 4, 0);
+                    //WriteProcessMemory(_targetProcessHandle, (uint)(_targetProcessBaseAddress + 0xD647C), BitConverter.GetBytes(2), 4, 0);
                 }
             }
         }
@@ -105,6 +104,7 @@ namespace SaveOrganizer
 
         public uint Pointer(uint Address)
         {
+            AttachToProcess();
             byte[] Intermediate = new byte[4];
             ReadProcessMemory(_targetProcessHandle, Address, Intermediate, 4, 0);
             return BitConverter.ToUInt32(Intermediate, 0);
