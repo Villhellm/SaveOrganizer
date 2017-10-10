@@ -16,6 +16,9 @@ namespace SaveOrganizer
 {
     class GameHooker
     {
+        [DllImport("Kernel32")]
+        private extern static Boolean CloseHandle(IntPtr handle);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
 
@@ -32,10 +35,10 @@ namespace SaveOrganizer
         static extern IntPtr VirtualAllocEx(IntPtr hProcess, int lpAddress, int dwSize, int flAllocationType, int flProtect);
 
         [DllImport("kernel32.dll")]
-        public static extern bool ReadProcessMemory(IntPtr hProcess,int lpBaseAddress, byte[] lpBuffer, int dwSize, int lpNumberOfBytesRead);
+        public static extern bool ReadProcessMemory(IntPtr hProcess, uint lpBaseAddress, byte[] lpBuffer, int dwSize, int lpNumberOfBytesRead);
 
         private IntPtr _targetProcessHandle = IntPtr.Zero;
-
+        private IntPtr _targetProcessBaseAddress = IntPtr.Zero;
         Dictionary<string, int> LuaFunctions;
         private bool NoClip = false;
         private bool Damage = true;
@@ -49,6 +52,10 @@ namespace SaveOrganizer
                 if(Proc.MainWindowTitle.ToLower() == "dark souls")
                 {
                     _targetProcessHandle = OpenProcess(0x1f0fff, false, Proc.Id);
+                    _targetProcessBaseAddress =  Proc.MainModule.BaseAddress;
+
+                    WriteProcessMemory(_targetProcessHandle, (Pointer(0x0019EEE4) + 0x108), BitConverter.GetBytes(3), 4, 0);
+                    WriteProcessMemory(_targetProcessHandle, (uint)(_targetProcessBaseAddress + 0xD647C), BitConverter.GetBytes(2), 4, 0);
                 }
             }
         }
@@ -66,12 +73,12 @@ namespace SaveOrganizer
         public void ExitToMainMenu()
         {
             AttachToProcess();
-            WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(2), 4, 0);
+            WriteProcessMemory(_targetProcessHandle, Pointer(0x13784A4), BitConverter.GetBytes(2), 4, 0);
             Thread.Sleep(15);
-            WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(0), 4, 0);
+            WriteProcessMemory(_targetProcessHandle, Pointer(0x13784A4), BitConverter.GetBytes(0), 4, 0);
             Thread.Sleep(10);
 
-            while (ReturnAddressValue((int)ReturnAddressValue(0x01378680) + 0xF8) != 1)
+            while (ReturnAddressValue(Pointer(0x01378680) + 0xF8) != 1)
             {
                 if(ReturnAddressValueWithVerification(0x0019EEE4) != 0x00786D36)
                 {
@@ -79,26 +86,33 @@ namespace SaveOrganizer
                 }
             }
 
-            WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x01378680) + 0xF8), BitConverter.GetBytes(2), 4, 0);
+            WriteProcessMemory(_targetProcessHandle, (Pointer(0x01378680) + 0xF8), BitConverter.GetBytes(2), 4, 0);
         }
 
         public void WarpToStart()
         {
             AttachToProcess();
-            WriteProcessMemory(_targetProcessHandle, ReturnAddressValue(0x13784A4), BitConverter.GetBytes(1), 4, 0);
+            WriteProcessMemory(_targetProcessHandle, Pointer(0x13784A4), BitConverter.GetBytes(1), 4, 0);
         }
 
-        public uint ReturnAddressValue(int Address)
+        public int ReturnAddressValue(uint Address)
         {
             AttachToProcess();
+            byte[] Intermediate = new byte[4];
+            ReadProcessMemory(_targetProcessHandle, Address, Intermediate, 4, 0);
+            return BitConverter.ToInt32(Intermediate, 0);
+        }
+
+        public uint Pointer(uint Address)
+        {
             byte[] Intermediate = new byte[4];
             ReadProcessMemory(_targetProcessHandle, Address, Intermediate, 4, 0);
             return BitConverter.ToUInt32(Intermediate, 0);
         }
 
-        public uint ReturnAddressValueWithVerification(int Address)
+        public int ReturnAddressValueWithVerification(uint Address)
         {
-            List<uint> Reads = new List<uint>();
+            List<int> Reads = new List<int>();
             for (int i = 0; i < 10; i++)
             {
                 Reads.Add(ReturnAddressValue(Address));
@@ -106,7 +120,7 @@ namespace SaveOrganizer
 
             int Count;
 
-            foreach (uint Adrs in Reads)
+            foreach (int Adrs in Reads)
             {
                 Count = (from temp in Reads where temp.Equals(Adrs) select temp).Count();
                 if (Count >= 5)
@@ -121,8 +135,8 @@ namespace SaveOrganizer
         public void LoadSaveMenu()
         {
             AttachToProcess();
-            WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x0019EEE4)+ 0x108), BitConverter.GetBytes(3), 4, 0);
-            WriteProcessMemory(_targetProcessHandle, (ReturnAddressValue(0x0019EEE4) + 0x114), BitConverter.GetBytes(2), 4, 0);
+            WriteProcessMemory(_targetProcessHandle, (Pointer(0x0019EEE4)+ 0x108), BitConverter.GetBytes(3), 4, 0);
+            WriteProcessMemory(_targetProcessHandle, (Pointer(0x0019EEE4) + 0x114), BitConverter.GetBytes(2), 4, 0);
         }
 
         private delegate Int32 MyAdd(Int32 x, Int32 y);
@@ -272,7 +286,7 @@ namespace SaveOrganizer
             {
                 ExitToMainMenu();
                 Thread.Sleep(100);
-                while (ReturnAddressValue((int)ReturnAddressValue(0x0019EEE4) + 0x10) != 27) ;
+                while (ReturnAddressValue(Pointer(0x0019EEE4) + 0x10) != 27) ;
                 DoThings();
                 LoadSaveMenu();
             }
@@ -284,12 +298,12 @@ namespace SaveOrganizer
 
         private bool InGame()
         {
-            uint Now = ReturnAddressValue((int)ReturnAddressValue(0x1378700) + 0x66);
-            uint Then = ReturnAddressValue((int)ReturnAddressValue(0x1378700) + 0x66);
+            int Now = ReturnAddressValue(Pointer(0x1378700) + 0x66);
+            int Then = ReturnAddressValue(Pointer(0x1378700) + 0x66);
             if (Now !=0)
             {
                 Thread.Sleep(20);
-                Now = ReturnAddressValue((int)ReturnAddressValue(0x1378700) + 0x66);
+                Now = ReturnAddressValue(Pointer(0x1378700) + 0x66);
                 if(Now != Then && Now != 0)
                 {
                     return true;

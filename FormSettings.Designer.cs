@@ -100,7 +100,7 @@
             // FLPHotkeys
             // 
             this.FLPHotkeys.AutoSize = true;
-            this.FLPHotkeys.Location = new System.Drawing.Point(52, 105);
+            this.FLPHotkeys.Location = new System.Drawing.Point(69, 95);
             this.FLPHotkeys.Margin = new System.Windows.Forms.Padding(0);
             this.FLPHotkeys.Name = "FLPHotkeys";
             this.FLPHotkeys.Size = new System.Drawing.Size(332, 264);
