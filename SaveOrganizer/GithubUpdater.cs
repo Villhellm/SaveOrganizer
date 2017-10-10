@@ -14,8 +14,8 @@ namespace SaveOrganizer
 {
     class GithubUpdater
     {
-        public static string VersionURL = "https://raw.githubusercontent.com/Villhellm/SaveOrganizer/master/Version.txt";
-        public static string ExecutableDownloadURL = "https://github.com/Villhellm/SaveOrganizer/raw/master/bin/Debug/SaveOrganizer.exe";
+        public static string VersionURL = "https://raw.githubusercontent.com/Villhellm/SaveOrganizer/master/SaveOrganizer/Version.txt";
+        public static string ExecutableDownloadURL = "https://github.com/Villhellm/SaveOrganizer/blob/master/SaveOrganizer/bin/Debug/SaveOrganizer.exe?raw=true";
         private string ConfigurationFile = Configuration.ConfigurationFile;
         public string LatestVersion { get; set; }
         public string CurrentVersion { get; set; }
