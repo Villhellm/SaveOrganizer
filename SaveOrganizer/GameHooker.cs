@@ -51,6 +51,10 @@ namespace SaveOrganizer
             {
                 if(Proc.MainWindowTitle.ToLower() == "dark souls")
                 {
+                    if(_targetProcessHandle != IntPtr.Zero)
+                    {
+                        CloseHandle(_targetProcessHandle);
+                    }
                     _targetProcessHandle = OpenProcess(0x1f0fff, false, Proc.Id);
                 }
             }
@@ -58,20 +62,14 @@ namespace SaveOrganizer
 
         public GameHooker()
         {
-            FillDictionary();
-        }
-
-        private void FillDictionary()
-        {
             LuaFunctions = FuncLocs.LuaFunctions();
         }
 
         public void ExitToMainMenu()
         {
-            AttachToProcess();
-            WriteProcessMemory(_targetProcessHandle, Pointer(0x13784A4), BitConverter.GetBytes(2), 4, 0);
+            Write(Pointer(0x13784A4), BitConverter.GetBytes(2));
             Thread.Sleep(15);
-            WriteProcessMemory(_targetProcessHandle, Pointer(0x13784A4), BitConverter.GetBytes(0), 4, 0);
+            Write(Pointer(0x13784A4), BitConverter.GetBytes(0));
             Thread.Sleep(10);
 
             while (ReturnAddressValue(Pointer(0x01378680) + 0xF8) != 1)
@@ -82,13 +80,12 @@ namespace SaveOrganizer
                 }
             }
 
-            WriteProcessMemory(_targetProcessHandle, (Pointer(0x01378680) + 0xF8), BitConverter.GetBytes(2), 4, 0);
+            Write((Pointer(0x01378680) + 0xF8), BitConverter.GetBytes(2));
         }
 
         public void WarpToStart()
         {
-            AttachToProcess();
-            WriteProcessMemory(_targetProcessHandle, Pointer(0x13784A4), BitConverter.GetBytes(1), 4, 0);
+            Write(Pointer(0x13784A4), BitConverter.GetBytes(1));
         }
 
         public int ReturnAddressValue(uint Address)
@@ -131,16 +128,14 @@ namespace SaveOrganizer
 
         public void LoadSaveMenu()
         {
-            AttachToProcess();
-            WriteProcessMemory(_targetProcessHandle, (Pointer(0x0019EEE4)+ 0x108), BitConverter.GetBytes(3), 4, 0);
-            WriteProcessMemory(_targetProcessHandle, (Pointer(0x0019EEE4) + 0x114), BitConverter.GetBytes(2), 4, 0);
+            Write((Pointer(0x0019EEE4)+ 0x108), BitConverter.GetBytes(3));
+            Write((Pointer(0x0019EEE4) + 0x114), BitConverter.GetBytes(2));
         }
 
         private delegate Int32 MyAdd(Int32 x, Int32 y);
 
         public void SetMapHit(bool YesNo)
         {
-            AttachToProcess();
             if (YesNo)
             {
                 RunLuaScript("disablemaphit", "10000", "0");
@@ -154,7 +149,6 @@ namespace SaveOrganizer
 
         public void SetGravity(bool YesNo)
         {
-            AttachToProcess();
             if (YesNo)
             {
                 RunLuaScript("setdisablegravity", "10000", "0");
@@ -198,22 +192,20 @@ namespace SaveOrganizer
 
         public void ToggleAI()
         {
-            AttachToProcess();
             if (AIEnabled)
             {
-                WriteProcessMemory(_targetProcessHandle, 0x13784EE, BitConverter.GetBytes(1), 4, 0);
+                Write(0x13784EE, BitConverter.GetBytes(1));
                 AIEnabled = false;
             }
             else
             {
-                WriteProcessMemory(_targetProcessHandle, 0x13784EE, BitConverter.GetBytes(0), 4, 0);
+                Write(0x13784EE, BitConverter.GetBytes(0));
                 AIEnabled = true;
             }
         }
 
         public void RunLuaScript(string LuaFunction, string Param1 = "", string Param2 = "", string Param3 = "", string Param4 = "", string Param5 = "")
         {
-            AttachToProcess();
             List<string> Params = new List<string>() { Param1, Param2, Param3, Param4, Param5 };
             IntPtr Param = Marshal.AllocHGlobal(4);
             int funcPtr = (int)VirtualAllocEx(_targetProcessHandle, 0, 1024, 4096, 0x40);
@@ -270,15 +262,24 @@ namespace SaveOrganizer
             Marshal.FreeHGlobal(Param);
 
 
-            WriteProcessMemory(_targetProcessHandle,Convert.ToUInt32(funcPtr), A.Bytes.ToArray(), 1024, 0);
+            Write(Convert.ToUInt32(funcPtr), A.Bytes.ToArray(), 1024);
             CreateRemoteThread(_targetProcessHandle, 0, 0, Convert.ToUInt32(funcPtr), 0, 0, 0);
             Thread.Sleep(5);
         }
 
-        public void QuitToMenuDoThingsThenLoadSaveMenu(Action DoThings)
+        public void Write(uint Address, byte[] ToBeWritten)
         {
             AttachToProcess();
+            WriteProcessMemory(_targetProcessHandle, Address, ToBeWritten, 4, 0);
+        }
+        public void Write(uint Address, byte[] ToBeWritten, int Buffer)
+        {
+            AttachToProcess();
+            WriteProcessMemory(_targetProcessHandle, Address, ToBeWritten, Buffer, 0);
+        }
 
+        public void QuitToMenuDoThingsThenLoadSaveMenu(Action DoThings)
+        {
             if (InGame())
             {
                 ExitToMainMenu();
@@ -306,7 +307,6 @@ namespace SaveOrganizer
                     return true;
                 }
             }
-
             return false;
         }
     }

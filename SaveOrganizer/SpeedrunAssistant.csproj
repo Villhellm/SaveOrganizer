@@ -71,6 +71,7 @@
     <Compile Include="ActionCenter.cs" />
     <Compile Include="ASM.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="DSSafeHandle.cs" />
     <Compile Include="FormHelp.cs">
       <SubType>Form</SubType>
     </Compile>
