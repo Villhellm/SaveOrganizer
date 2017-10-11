@@ -192,20 +192,24 @@ namespace SaveOrganizer
 
         public void ToggleAI()
         {
-            if (AIEnabled)
+            bool Enabled = Convert.ToBoolean(ReturnAddressValue(0x13784EE));
+            Write(0x13784EE, BitConverter.GetBytes(!Enabled));
+        }
+
+        private void WaitMilliseconds(int Millis)
+        {
+            DateTime Then = DateTime.Now;
+            DateTime Now = DateTime.Now;
+
+            while (Then.AddMilliseconds(Millis) > Now)
             {
-                Write(0x13784EE, BitConverter.GetBytes(1));
-                AIEnabled = false;
-            }
-            else
-            {
-                Write(0x13784EE, BitConverter.GetBytes(0));
-                AIEnabled = true;
+                Now = DateTime.Now;
             }
         }
 
         public void RunLuaScript(string LuaFunction, string Param1 = "", string Param2 = "", string Param3 = "", string Param4 = "", string Param5 = "")
         {
+            AttachToProcess();
             List<string> Params = new List<string>() { Param1, Param2, Param3, Param4, Param5 };
             IntPtr Param = Marshal.AllocHGlobal(4);
             int funcPtr = (int)VirtualAllocEx(_targetProcessHandle, 0, 1024, 4096, 0x40);
