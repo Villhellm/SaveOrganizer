@@ -38,7 +38,7 @@ namespace SaveOrganizer
         public static extern bool ReadProcessMemory(IntPtr hProcess, uint lpBaseAddress, byte[] lpBuffer, int dwSize, int lpNumberOfBytesRead);
 
         private IntPtr _targetProcessHandle = IntPtr.Zero;
-        public IntPtr _targetProcessBaseAddress = IntPtr.Zero;
+        public uint _targetProcessBaseAddress = 0x400000;
         Dictionary<string, int> LuaFunctions;
         private bool NoClip = false;
         private bool Damage = true;
@@ -52,9 +52,6 @@ namespace SaveOrganizer
                 if(Proc.MainWindowTitle.ToLower() == "dark souls")
                 {
                     _targetProcessHandle = OpenProcess(0x1f0fff, false, Proc.Id);
-                    _targetProcessBaseAddress =  Proc.MainModule.BaseAddress;
-
-                    //WriteProcessMemory(_targetProcessHandle, (uint)(_targetProcessBaseAddress + 0xD647C), BitConverter.GetBytes(2), 4, 0);
                 }
             }
         }
