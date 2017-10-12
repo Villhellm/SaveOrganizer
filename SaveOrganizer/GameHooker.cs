@@ -41,7 +41,7 @@ namespace SaveOrganizer
         public uint _targetProcessBaseAddress = 0x400000;
         Dictionary<string, int> LuaFunctions;
         private bool NoClip = false;
-        private bool Damage = true;
+        private uint Damage = 0;
         private bool AIEnabled = true;
 
         private void AttachToProcess()
@@ -63,15 +63,6 @@ namespace SaveOrganizer
         public GameHooker()
         {
             LuaFunctions = FuncLocs.LuaFunctions();
-            System.Windows.Forms.Timer TimeReference = new System.Windows.Forms.Timer();
-            TimeReference.Interval = 100;
-            TimeReference.Tick += TimeReference_Tick;
-            TimeReference.Start();
-        }
-
-        private void TimeReference_Tick(object sender, EventArgs e)
-        {
-           
         }
 
         public void ExitToMainMenu()
@@ -198,9 +189,10 @@ namespace SaveOrganizer
             uint CharacterPointer = ReturnPointer(0x137DC70);
             CharacterPointer = ReturnPointer(CharacterPointer + 0x4);
             CharacterPointer = ReturnPointer(CharacterPointer);
-            bool DamageToggle = ReturnInt32(CharacterPointer + 0x1FF) == 4202496;
-
-            SetDamage(DamageToggle);
+            uint DamageValue = ReturnPointer(CharacterPointer + 0x1FF);
+            bool DamageToggle = DamageValue == Damage;
+            SetDamage(!DamageToggle);
+            Damage = DamageValue;
         }
 
         public void ToggleAI()
