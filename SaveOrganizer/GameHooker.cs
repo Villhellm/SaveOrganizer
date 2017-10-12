@@ -63,16 +63,25 @@ namespace SaveOrganizer
         public GameHooker()
         {
             LuaFunctions = FuncLocs.LuaFunctions();
+            System.Windows.Forms.Timer TimeReference = new System.Windows.Forms.Timer();
+            TimeReference.Interval = 100;
+            TimeReference.Tick += TimeReference_Tick;
+            TimeReference.Start();
+        }
+
+        private void TimeReference_Tick(object sender, EventArgs e)
+        {
+           
         }
 
         public void ExitToMainMenu()
         {
-            Write(Pointer(0x13784A4), BitConverter.GetBytes(2));
+            Write(ReturnPointer(0x13784A4), BitConverter.GetBytes(2));
             Thread.Sleep(15);
-            Write(Pointer(0x13784A4), BitConverter.GetBytes(0));
+            Write(ReturnPointer(0x13784A4), BitConverter.GetBytes(0));
             Thread.Sleep(10);
 
-            while (ReturnAddressValue(Pointer(0x01378680) + 0xF8) != 1)
+            while (ReturnInt32(ReturnPointer(0x01378680) + 0xF8) != 1)
             {
                 if(ReturnAddressValueWithVerification(0x0019EEE4) != 0x00786D36)
                 {
@@ -80,15 +89,15 @@ namespace SaveOrganizer
                 }
             }
 
-            Write((Pointer(0x01378680) + 0xF8), BitConverter.GetBytes(2));
+            Write((ReturnPointer(0x01378680) + 0xF8), BitConverter.GetBytes(2));
         }
 
         public void WarpToStart()
         {
-            Write(Pointer(0x13784A4), BitConverter.GetBytes(1));
+            Write(ReturnPointer(0x13784A4), BitConverter.GetBytes(1));
         }
 
-        public int ReturnAddressValue(uint Address)
+        public int ReturnInt32(uint Address)
         {
             AttachToProcess();
             byte[] Intermediate = new byte[4];
@@ -96,7 +105,7 @@ namespace SaveOrganizer
             return BitConverter.ToInt32(Intermediate, 0);
         }
 
-        public uint Pointer(uint Address)
+        public uint ReturnPointer(uint Address)
         {
             AttachToProcess();
             byte[] Intermediate = new byte[4];
@@ -109,7 +118,7 @@ namespace SaveOrganizer
             List<int> Reads = new List<int>();
             for (int i = 0; i < 10; i++)
             {
-                Reads.Add(ReturnAddressValue(Address));
+                Reads.Add(ReturnInt32(Address));
             }
 
             int Count;
@@ -128,8 +137,8 @@ namespace SaveOrganizer
 
         public void LoadSaveMenu()
         {
-            Write((Pointer(0x0019EEE4)+ 0x108), BitConverter.GetBytes(3));
-            Write((Pointer(0x0019EEE4) + 0x114), BitConverter.GetBytes(2));
+            Write((ReturnPointer(0x0019EEE4)+ 0x108), BitConverter.GetBytes(3));
+            Write((ReturnPointer(0x0019EEE4) + 0x114), BitConverter.GetBytes(2));
         }
 
         private delegate Int32 MyAdd(Int32 x, Int32 y);
@@ -147,9 +156,9 @@ namespace SaveOrganizer
             }
         }
 
-        public void SetGravity(bool YesNo)
+        public void SetGravity(bool Toggle)
         {
-            if (YesNo)
+            if (Toggle)
             {
                 RunLuaScript("setdisablegravity", "10000", "0");
 
@@ -160,39 +169,43 @@ namespace SaveOrganizer
             }
         }
 
-        public void ToggleNoClip()
+        public void SetDamage(bool Toggle)
         {
-            if (NoClip)
-            {
-                SetGravity(true);
-                SetMapHit(true);
-                NoClip = false;
-            }
-            else
-            {
-                SetGravity(false);
-                SetMapHit(false);
-                NoClip = true;
-            }
-        }
-
-        public void ToggleDamage()
-        {
-            if (Damage)
+            if (Toggle)
             {
                 RunLuaScript("disabledamage", "10000", "1");
-                Damage = false;
             }
             else
             {
                 RunLuaScript("disabledamage", "10000", "0");
-                Damage = true;
             }
+        }
+
+        public void ToggleNoClip()
+        {
+            uint CharacterPointer = ReturnPointer(0x137DC70);
+            CharacterPointer = ReturnPointer(CharacterPointer + 0x4);
+            CharacterPointer = ReturnPointer(CharacterPointer);
+            uint CharacterMapDataPointer = ReturnPointer(CharacterPointer + 0x28);
+            bool NoClipToggle = ((ReturnPointer(CharacterMapDataPointer+ 0xC4) & 0x10) == 0x10);
+
+            SetGravity(NoClipToggle);
+            SetMapHit(NoClipToggle);
+        }
+
+        public void ToggleDamage()
+        {
+            uint CharacterPointer = ReturnPointer(0x137DC70);
+            CharacterPointer = ReturnPointer(CharacterPointer + 0x4);
+            CharacterPointer = ReturnPointer(CharacterPointer);
+            bool DamageToggle = ReturnInt32(CharacterPointer + 0x1FF) == 4202496;
+
+            SetDamage(DamageToggle);
         }
 
         public void ToggleAI()
         {
-            bool Enabled = Convert.ToBoolean(ReturnAddressValue(0x13784EE));
+            bool Enabled = Convert.ToBoolean(ReturnInt32(0x13784EE));
             Write(0x13784EE, BitConverter.GetBytes(!Enabled));
         }
 
@@ -288,7 +301,7 @@ namespace SaveOrganizer
             {
                 ExitToMainMenu();
                 Thread.Sleep(100);
-                while (ReturnAddressValue(Pointer(0x0019EEE4) + 0x10) != 27) ;
+                while (ReturnInt32(ReturnPointer(0x0019EEE4) + 0x10) != 27) ;
                 DoThings();
                 LoadSaveMenu();
             }
@@ -300,12 +313,12 @@ namespace SaveOrganizer
 
         private bool InGame()
         {
-            int Now = ReturnAddressValue(Pointer(0x1378700) + 0x66);
-            int Then = ReturnAddressValue(Pointer(0x1378700) + 0x66);
+            int Now = ReturnInt32(ReturnPointer(0x1378700) + 0x66);
+            int Then = ReturnInt32(ReturnPointer(0x1378700) + 0x66);
             if (Now !=0)
             {
                 Thread.Sleep(20);
-                Now = ReturnAddressValue(Pointer(0x1378700) + 0x66);
+                Now = ReturnInt32(ReturnPointer(0x1378700) + 0x66);
                 if(Now != Then && Now != 0)
                 {
                     return true;
