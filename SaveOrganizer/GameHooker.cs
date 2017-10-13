@@ -195,21 +195,17 @@ namespace SaveOrganizer
             Damage = DamageValue;
         }
 
+        public void ToggleConsumables()
+        {
+
+            uint EquipedItemQuantity = ReturnPointer(0x018200D0) + 0x8;
+            Write(EquipedItemQuantity, 99);
+        }
+
         public void ToggleAI()
         {
             bool Enabled = Convert.ToBoolean(ReturnInt32(0x13784EE));
             Write(0x13784EE, BitConverter.GetBytes(!Enabled));
-        }
-
-        private void WaitMilliseconds(int Millis)
-        {
-            DateTime Then = DateTime.Now;
-            DateTime Now = DateTime.Now;
-
-            while (Then.AddMilliseconds(Millis) > Now)
-            {
-                Now = DateTime.Now;
-            }
         }
 
         public void RunLuaScript(string LuaFunction, string Param1 = "", string Param2 = "", string Param3 = "", string Param4 = "", string Param5 = "")
@@ -281,6 +277,13 @@ namespace SaveOrganizer
             AttachToProcess();
             WriteProcessMemory(_targetProcessHandle, Address, ToBeWritten, 4, 0);
         }
+
+        public void Write(uint Address, int ToBeWritten)
+        {
+            AttachToProcess();
+            WriteProcessMemory(_targetProcessHandle, Address,BitConverter.GetBytes(ToBeWritten), 4, 0);
+        }
+
         public void Write(uint Address, byte[] ToBeWritten, int Buffer)
         {
             AttachToProcess();
