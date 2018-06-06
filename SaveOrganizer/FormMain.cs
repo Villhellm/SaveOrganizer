@@ -135,7 +135,6 @@ namespace SaveOrganizer
                                 if (ComboBoxSelectGame.Text == "Dark Souls")
                                 {
                                     dsHooker.ToggleAI();
-                                    //int test = dsHooker.ReturnAddressValue((uint)(dsHooker._targetProcessBaseAddress + 0x877ace));
                                 }
                                 else
                                 {
